@@ -84,6 +84,20 @@ describe('GET /v1/scan-events', () => {
 });
 
 describe('CRUD /v1/admin/blocklist', () => {
+  it('pagina entradas com limit e offset', async () => {
+    const app = await createAdminTestApp();
+    const res = await app.inject({
+      method: 'GET',
+      url: '/v1/admin/blocklist?limit=1&offset=1',
+      headers: adminHeader(),
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json() as { entries: string[]; total: number };
+    expect(body.total).toBe(2);
+    expect(body.entries).toHaveLength(1);
+    await app.close();
+  });
+
   it('lista, adiciona e remove entrada', async () => {
     const app = await createAdminTestApp();
 

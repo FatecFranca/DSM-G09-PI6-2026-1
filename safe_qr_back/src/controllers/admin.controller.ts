@@ -8,6 +8,7 @@ import {
 } from '../lib/admin-auth.js';
 import {
   blocklistDeleteBodySchema,
+  blocklistListQuerySchema,
   blocklistPostBodySchema,
   scanEventsListQuerySchema,
 } from '../schemas/admin.schema.js';
@@ -90,7 +91,14 @@ export class AdminController {
       return;
     }
 
-    const result = await this.deps.blocklist.list();
+    const parsed = blocklistListQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      return reply.status(400).send(
+        validationError(req.id, 'Query inválida.', parsed.error.flatten()),
+      );
+    }
+
+    const result = await this.deps.blocklist.list(parsed.data);
     return reply.send(toBlocklistResponseJson(result));
   };
 

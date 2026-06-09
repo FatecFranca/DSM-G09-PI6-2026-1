@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Filter, RefreshCw } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { QrVerdict } from '../api/types';
 import { ApiError } from '../api/types';
@@ -9,7 +9,9 @@ import { TopBar } from '../components/layout/TopBar';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { EmptyState } from '../components/ui/EmptyState';
+import { Pagination } from '../components/ui/Pagination';
 import { Skeleton } from '../components/ui/Skeleton';
+import { clampPage, DEFAULT_PAGE_SIZE } from '../lib/pagination';
 import { VerdictBadge } from '../components/ui/VerdictBadge';
 import { formatDateTime, shortenUserId, truncateMiddle } from '../lib/format';
 import { VERDICT_LABELS, VERDICT_ORDER } from '../lib/verdict';
@@ -17,16 +19,29 @@ import { VERDICT_LABELS, VERDICT_ORDER } from '../lib/verdict';
 export function EventsPage() {
   const { api } = useAdminAuth();
   const [verdict, setVerdict] = useState<QrVerdict | ''>('');
+  const [page, setPage] = useState(0);
 
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
-    queryKey: ['admin', 'scan-events', verdict],
+    queryKey: ['admin', 'scan-events', verdict, page],
     queryFn: () =>
       api!.getScanEvents({
-        limit: 100,
+        limit: DEFAULT_PAGE_SIZE,
+        offset: page * DEFAULT_PAGE_SIZE,
         verdict: verdict || undefined,
       }),
     enabled: Boolean(api),
   });
+
+  useEffect(() => {
+    if (data) {
+      setPage((current) => clampPage(current, data.total, DEFAULT_PAGE_SIZE));
+    }
+  }, [data]);
+
+  function changeVerdict(next: QrVerdict | '') {
+    setVerdict(next);
+    setPage(0);
+  }
 
   const errorMessage =
     error instanceof ApiError
@@ -56,7 +71,7 @@ export function EventsPage() {
             <Filter className="h-4 w-4 text-slate-500" />
             <button
               type="button"
-              onClick={() => setVerdict('')}
+              onClick={() => changeVerdict('')}
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                 verdict === ''
                   ? 'bg-accent/20 text-accent-glow'
@@ -69,7 +84,7 @@ export function EventsPage() {
               <button
                 key={v}
                 type="button"
-                onClick={() => setVerdict(v)}
+                onClick={() => changeVerdict(v)}
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                   verdict === v
                     ? 'bg-accent/20 text-accent-glow'
@@ -105,6 +120,16 @@ export function EventsPage() {
             />
           ) : (
             <div className="glass-panel overflow-hidden">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/8 px-5 py-3">
+                <span className="text-sm font-semibold text-white">Registros</span>
+                <Pagination
+                  variant="header"
+                  page={page}
+                  pageSize={DEFAULT_PAGE_SIZE}
+                  total={data.total}
+                  onPageChange={setPage}
+                />
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[800px] text-left text-sm">
                   <thead>
@@ -146,9 +171,12 @@ export function EventsPage() {
                   </tbody>
                 </table>
               </div>
-              <footer className="border-t border-white/8 px-5 py-3 text-xs text-slate-500">
-                {data.total} evento(s) no total
-              </footer>
+              <Pagination
+                page={page}
+                pageSize={DEFAULT_PAGE_SIZE}
+                total={data.total}
+                onPageChange={setPage}
+              />
             </div>
           )}
         </div>

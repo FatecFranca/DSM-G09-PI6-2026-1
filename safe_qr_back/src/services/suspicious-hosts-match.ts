@@ -8,37 +8,90 @@ export function normalizeHostname(host: string): string {
 }
 
 /**
- * Extrai hostname normalizado a partir de uma entrada da lista (URL completa ou host).
+ * Converte entrada da blocklist em padrão de comparação:
+ * - URL ou domínio → hostname normalizado (`https://amaz0n.com.br/x` → `amaz0n.com.br`)
+ * - palavra-chave → token em minúsculas (`amaz0n`, `magasine`)
  */
-export function listEntryToNormalizedHost(entry: string): string | null {
-  const t = entry.trim();
+export function listEntryToBlockPattern(entry: string): string | null {
+  const t = entry.trim().toLowerCase();
   if (!t) {
     return null;
   }
-  try {
-    const withScheme = t.includes('://') ? t : `https://${t}`;
-    const u = new URL(withScheme);
-    if (!u.hostname) {
-      return null;
+
+  const hostFromUrl = tryExtractHostname(t);
+  if (hostFromUrl) {
+    return normalizeHostname(hostFromUrl);
+  }
+
+  if (t.includes('.')) {
+    const hostOnly = t.split('/')[0]?.split('?')[0]?.split('#')[0];
+    if (hostOnly?.includes('.')) {
+      return normalizeHostname(hostOnly);
     }
-    return normalizeHostname(u.hostname);
+  }
+
+  const keyword = t.replace(/[^a-z0-9-]/g, '');
+  return keyword.length > 0 ? keyword : null;
+}
+
+/** @deprecated Use {@link listEntryToBlockPattern} — mantido para testes legados. */
+export function listEntryToNormalizedHost(entry: string): string | null {
+  return listEntryToBlockPattern(entry);
+}
+
+function tryExtractHostname(entry: string): string | null {
+  try {
+    const withScheme = entry.includes('://') ? entry : `https://${entry.split('/')[0]}`;
+    const u = new URL(withScheme);
+    return u.hostname || null;
   } catch {
-    return normalizeHostname(t);
+    return null;
   }
 }
 
-/** Correspondência exata ou subdomínio de um host da lista (ex.: `x.evil.com` vs `evil.com`). */
+/**
+ * Correspondência da blocklist:
+ * - domínio: exato, subdomínio ou variante com sufixo (`amaz0n.com.br` em `amaz0n.com.br2`)
+ * - palavra-chave (sem `.`): presença no host (`amaz0n` em qualquer typosquat)
+ */
 export function hostnameMatchesBlocklist(normalizedHost: string, blocklist: Set<string>): boolean {
-  if (blocklist.has(normalizedHost)) {
-    return true;
+  if (!normalizedHost) {
+    return false;
   }
-  for (const blocked of blocklist) {
-    if (!blocked) {
+
+  for (const pattern of blocklist) {
+    if (!pattern) {
       continue;
     }
-    if (normalizedHost.endsWith(`.${blocked}`)) {
+    if (normalizedHost === pattern) {
       return true;
     }
+    if (normalizedHost.endsWith(`.${pattern}`)) {
+      return true;
+    }
+
+    if (pattern.includes('.')) {
+      if (domainPatternMatches(normalizedHost, pattern)) {
+        return true;
+      }
+    } else if (pattern.length >= 3 && normalizedHost.includes(pattern)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/** Domínio: exato, subdomínio ou sufixo colado (ex.: `amaz0n.com.br2`). */
+function domainPatternMatches(host: string, pattern: string): boolean {
+  if (host === pattern) {
+    return true;
+  }
+  if (host.endsWith(`.${pattern}`)) {
+    return true;
+  }
+  if (host.startsWith(pattern) && host.length > pattern.length) {
+    const next = host.charAt(pattern.length);
+    return next !== '.';
   }
   return false;
 }

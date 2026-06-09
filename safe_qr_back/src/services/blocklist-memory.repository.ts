@@ -7,8 +7,13 @@ export class InMemoryBlocklistRepository implements BlocklistRepositoryPort {
     this.entries = [...seed];
   }
 
-  async list() {
-    return { entries: [...this.entries], total: this.entries.length };
+  async list(options?: { limit: number; offset: number }) {
+    const total = this.entries.length;
+    if (!options) {
+      return { entries: [...this.entries], total };
+    }
+    const slice = this.entries.slice(options.offset, options.offset + options.limit);
+    return { entries: slice, total };
   }
 
   async add(entry: string) {

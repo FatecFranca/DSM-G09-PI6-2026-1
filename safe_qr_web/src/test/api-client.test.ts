@@ -50,6 +50,21 @@ describe('createApiClient', () => {
     expect(err).toMatchObject({ status: 401, message: 'Chave inválida' });
   });
 
+  it('monta query string em getBlocklist', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ entries: [], total: 0 }),
+    });
+
+    const client = createApiClient({ baseUrl: 'http://api.test/', adminKey: 'k' });
+    await client.getBlocklist({ limit: 10, offset: 20 });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      'http://api.test/v1/admin/blocklist?limit=10&offset=20',
+    );
+  });
+
   it('monta query string em getScanEvents', async () => {
     fetchMock.mockResolvedValueOnce({
       ok: true,

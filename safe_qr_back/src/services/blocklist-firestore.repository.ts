@@ -11,7 +11,7 @@ export class FirestoreBlocklistRepository implements BlocklistRepositoryPort {
     return getFirestore();
   }
 
-  async list() {
+  async list(options?: { limit: number; offset: number }) {
     const snap = await this.db().doc(DOC_PATH).get();
     if (!snap.exists) {
       return { entries: [], total: 0 };
@@ -20,7 +20,11 @@ export class FirestoreBlocklistRepository implements BlocklistRepositoryPort {
     const urls = Array.isArray(data?.urls)
       ? data.urls.filter((v): v is string => typeof v === 'string')
       : [];
-    return { entries: urls, total: urls.length };
+    const total = urls.length;
+    if (!options) {
+      return { entries: urls, total };
+    }
+    return { entries: urls.slice(options.offset, options.offset + options.limit), total };
   }
 
   async add(entry: string) {

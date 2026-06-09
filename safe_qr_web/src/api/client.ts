@@ -54,7 +54,13 @@ export function createApiClient(config: ApiClientConfig) {
       return request<ScanEventsResponse>(`/v1/scan-events${qs ? `?${qs}` : ''}`);
     },
 
-    getBlocklist: () => request<BlocklistResponse>('/v1/admin/blocklist'),
+    getBlocklist: (params?: { limit?: number; offset?: number }) => {
+      const search = new URLSearchParams();
+      if (params?.limit != null) search.set('limit', String(params.limit));
+      if (params?.offset != null) search.set('offset', String(params.offset));
+      const qs = search.toString();
+      return request<BlocklistResponse>(`/v1/admin/blocklist${qs ? `?${qs}` : ''}`);
+    },
 
     addBlocklistEntry: (entry: string) =>
       request<BlocklistMutationResponse>('/v1/admin/blocklist', {

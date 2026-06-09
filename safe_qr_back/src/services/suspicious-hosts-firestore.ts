@@ -2,7 +2,11 @@ import { getFirestore } from 'firebase-admin/firestore';
 
 import { ensureFirebaseApp } from '../lib/firebase-admin.js';
 import type { SuspiciousHostsPort } from './suspicious-hosts-port.js';
-import { hostnameMatchesBlocklist, listEntryToNormalizedHost, normalizeHostname } from './suspicious-hosts-match.js';
+import {
+  hostnameMatchesBlocklist,
+  listEntryToBlockPattern,
+  normalizeHostname,
+} from './suspicious-hosts-match.js';
 
 const DOC_PATH = 'suspicious_hosts/clones';
 
@@ -56,9 +60,9 @@ export class FirestoreSuspiciousHostsPort implements SuspiciousHostsPort {
         if (typeof item !== 'string') {
           continue;
         }
-        const h = listEntryToNormalizedHost(item);
-        if (h) {
-          hosts.add(h);
+        const pattern = listEntryToBlockPattern(item);
+        if (pattern) {
+          hosts.add(pattern);
         }
       }
     }

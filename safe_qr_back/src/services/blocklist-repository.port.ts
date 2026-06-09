@@ -3,8 +3,13 @@ export type BlocklistListResult = {
   total: number;
 };
 
+export type BlocklistListOptions = {
+  limit: number;
+  offset: number;
+};
+
 export interface BlocklistRepositoryPort {
-  list(): Promise<BlocklistListResult>;
+  list(options?: BlocklistListOptions): Promise<BlocklistListResult>;
   add(entry: string): Promise<{ added: boolean }>;
   remove(entry: string): Promise<{ removed: boolean }>;
 }
