@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 
 import cors from '@fastify/cors';
 import Fastify from 'fastify';
-import type { FastifyInstance } from 'fastify';
+import type { FastifyBaseLogger, FastifyInstance } from 'fastify';
 
 import type { Env } from './config/env.js';
 import type { Logger } from './lib/logger.js';
@@ -11,7 +11,7 @@ import { registerV1Routes } from './routes/v1.routes.js';
 export async function buildApp(env: Env, logger: Logger): Promise<FastifyInstance> {
   const app = Fastify({
     // Fastify 5: instância Pino vai em `loggerInstance`; `logger` aceita só boolean | objeto de config.
-    loggerInstance: logger,
+    loggerInstance: logger as FastifyBaseLogger,
     genReqId: () => randomUUID(),
     requestIdHeader: 'x-request-id',
     disableRequestLogging: false,

@@ -1,0 +1,16 @@
+node_modules
+dist
+coverage
+.env
+.env.*
+!.env.example
+credentials
+*.log
+.git
+.gitignore
+docs
+test
+*.md
+safe-qr-app-*.json
+*-firebase-adminsdk-*.json
+service-account*.json

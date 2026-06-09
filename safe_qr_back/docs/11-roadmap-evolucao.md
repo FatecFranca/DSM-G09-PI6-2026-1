@@ -14,7 +14,8 @@ Documento de planejamento baseado no estado atual do código e nos docs de sprin
 | CRUD histórico `/v1/history` | ✅ Firestore |
 | Autenticação Firebase JWT | ✅ analyze + history |
 | Pub/Sub mensageria | ✅ Produtor + fan-out consumidores |
-| Deploy nuvem documentado | ❌ Parcial |
+| Deploy Cloud Run (API) | ✅ `safe-qr-api` em `southamerica-east1` |
+| Deploy workers Cloud Run | ✅ `safe-qr-worker-history` + `safe-qr-worker-audit` |
 
 ## Gaps vs. checklist acadêmico (Sprint 2)
 
@@ -64,9 +65,9 @@ flowchart LR
   A --> SE[(scan_events)]
 ```
 
-**Docs:** [13-pubsub-qr-analyzed.md](./13-pubsub-qr-analyzed.md), [safe_qr_messaging/docs/02-FANOUT-HISTORICO-AUDIT.md](../../safe_qr_messaging/docs/02-FANOUT-HISTORICO-AUDIT.md).
+**Docs:** [13-pubsub-qr-analyzed.md](./13-pubsub-qr-analyzed.md), [safe_qr_workers/docs/02-FANOUT-HISTORICO-AUDIT.md](../../safe_qr_workers/docs/02-FANOUT-HISTORICO-AUDIT.md).
 
-**Próximo:** `GET /v1/scan-events` (listar auditoria), deploy Cloud Run do consumidor.
+**Próximo:** `GET /v1/scan-events` (listar auditoria no app).
 
 <details>
 <summary>Payload original planejado (referência)</summary>

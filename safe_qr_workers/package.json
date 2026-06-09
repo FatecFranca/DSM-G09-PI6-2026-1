@@ -11,6 +11,8 @@
     "consume:audit": "tsx scripts/consume-audit.ts",
     "consume:history": "tsx scripts/consume-history.ts",
     "consume:events": "tsx scripts/consume-audit.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start:cloud": "node dist/scripts/cloud-entry.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },

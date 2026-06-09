@@ -122,7 +122,7 @@ export class QrAnalyzeService {
     return this.textOnly(content);
   }
 
-  private textOnly(content: string, extra?: string): QrAnalyzeResultModel {
+  private textOnly(_content: string, extra?: string): QrAnalyzeResultModel {
     const reasons = [
       ...(extra ? [extra] : []),
       'Não detectamos URL HTTP/HTTPS clara. Verifique a origem física e de quem enviou o QR.',

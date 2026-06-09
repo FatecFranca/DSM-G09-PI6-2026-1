@@ -63,15 +63,24 @@ O build usa `tsconfig.build.json` (emite ESM para `dist/`).
 
 ## Conectar o app Flutter
 
-No `.env` do app (`safe_qr_app/assets/.env`):
+### Produção (Cloud Run)
+
+```env
+API_BASE_URL=https://safe-qr-api-214537528312.southamerica-east1.run.app
+ANALYZE_MODE=remote
+```
+
+Arquivo: `safe_qr_app/assets/.env`. Reinicie o app após alterar (hot reload não recarrega `.env`).
+
+### Desenvolvimento local
 
 ```env
 API_BASE_URL=http://192.168.x.x:3000
 ANALYZE_MODE=remote
 ```
 
-> **Android emulador:** use `http://10.0.2.2:3000` para alcançar o host.  
-> **Dispositivo físico:** use o IP da máquina na mesma rede Wi‑Fi.
+> **Android emulador:** `http://10.0.2.2:3000`  
+> **Dispositivo físico:** IP da máquina na mesma Wi‑Fi (`npm run dev` mostra o IP).
 
 O app faz health check no bootstrap (`GET /v1/health`).
 
@@ -79,23 +88,18 @@ O app faz health check no bootstrap (`GET /v1/health`).
 
 ### Google Cloud Run (recomendado para o ecossistema Firebase)
 
-1. Criar `Dockerfile`:
+**Guia completo:** [deploy-cloud-run.md](./deploy-cloud-run.md)
 
-```dockerfile
-FROM node:20-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --omit=dev
-COPY dist ./dist
-ENV NODE_ENV=production
-EXPOSE 3000
-CMD ["node", "dist/server.js"]
+```powershell
+cd safe_qr_back
+.\scripts\deploy-cloud-run.ps1
 ```
 
-2. Build e push da imagem
-3. Deploy no Cloud Run com variáveis de ambiente
-4. Usar **ADC** (Application Default Credentials) — não precisa de arquivo JSON se a service account do Cloud Run tiver acesso ao Firestore
-5. Configurar `FIREBASE_SERVICE_ACCOUNT_JSON` como secret se necessário
+Artefatos no repositório: `Dockerfile`, `.dockerignore`, `scripts/deploy-cloud-run.ps1`.
+
+- Build multi-stage (TypeScript → `dist/`)
+- **ADC** automático — sem JSON de conta de serviço no container
+- `SIGTERM` → graceful shutdown (Cloud Run)
 
 ### Render / Railway / Fly.io
 
@@ -113,7 +117,7 @@ CMD ["node", "dist/server.js"]
 
 | Item | Status atual | Ação |
 |------|--------------|------|
-| TLS/HTTPS | Manual | Configurar no proxy |
+| TLS/HTTPS | ✅ Cloud Run | HTTPS automático na URL `.run.app` |
 | CORS restrito | `origin: true` | Restringir domínios do app |
 | Rate limiting | Não implementado | Adicionar `@fastify/rate-limit` |
 | Autenticação API | Não | Avaliar API key se exposto publicamente |

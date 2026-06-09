@@ -19,5 +19,9 @@ export function hasFirebaseCredentials(env: {
   GOOGLE_APPLICATION_CREDENTIALS?: string;
   FIREBASE_SERVICE_ACCOUNT_JSON?: string;
 }): boolean {
-  return Boolean(env.GOOGLE_APPLICATION_CREDENTIALS?.trim() || env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim());
+  if (env.GOOGLE_APPLICATION_CREDENTIALS?.trim() || env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim()) {
+    return true;
+  }
+  // Cloud Run / GCE: ADC via metadata server (sem JSON no disco).
+  return Boolean(process.env.K_SERVICE?.trim() || process.env.GOOGLE_CLOUD_PROJECT?.trim());
 }

@@ -166,32 +166,33 @@ cp assets/.env.example assets/.env
 flutter run
 ```
 
-### 3. Stack completa (histórico remoto assíncrono)
+### 3. Produção — Cloud Run (stack completa, sem PC local)
 
-Além da API, subir os workers e garantir no GCP:
+| Serviço | Deploy |
+|---------|--------|
+| API | `cd safe_qr_back && .\scripts\deploy-cloud-run.ps1` |
+| Workers | `cd safe_qr_workers && .\scripts\deploy-cloud-run.ps1` |
 
-- Tópico `safe-qr-analyze-events`
-- Subscription `safe-qr-analyze-events-sub-history`
-- Subscription `safe-qr-analyze-events-sub` (auditoria)
-- Conta de serviço com `pubsub.subscriber` + `Cloud Datastore User`
+URLs e IAM: [`safe_qr_back/docs/deploy-cloud-run.md`](./safe_qr_back/docs/deploy-cloud-run.md) · [`safe_qr_workers/docs/deploy-cloud-run.md`](./safe_qr_workers/docs/deploy-cloud-run.md)
+
+App (`safe_qr_app/assets/.env`):
+
+```env
+API_BASE_URL=https://safe-qr-api-214537528312.southamerica-east1.run.app
+ANALYZE_MODE=remote
+```
+
+### 4. Stack local (histórico assíncrono em dev)
 
 ```bash
 cd safe_qr_workers
 cp .env.example .env
-# Colocar chave SA em credentials/ (não commitar)
 npm install
 npm run consume:history   # terminal 1
 npm run consume:audit     # terminal 2 (opcional)
 ```
 
-Teste ponta a ponta:
-
-```bash
-curl -s -X POST http://localhost:3000/v1/qr/analyze \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <firebase-id-token>" \
-  -d '{"rawContent":"https://example.com","client":{"platform":"android","appVersion":"1.0.0"}}'
-```
+> Não rode consumidores locais se os workers já estiverem no Cloud Run.
 
 ---
 
@@ -230,6 +231,7 @@ cd safe_qr_workers && npm test
 | Endpoints REST | [`safe_qr_back/docs/05-api-endpoints.md`](./safe_qr_back/docs/05-api-endpoints.md) |
 | Histórico na nuvem | [`safe_qr_back/docs/12-api-historico.md`](./safe_qr_back/docs/12-api-historico.md) |
 | Pub/Sub e fan-out | [`safe_qr_workers/docs/02-FANOUT-HISTORICO-AUDIT.md`](./safe_qr_workers/docs/02-FANOUT-HISTORICO-AUDIT.md) |
+| Deploy Cloud Run | [`safe_qr_back/docs/deploy-cloud-run.md`](./safe_qr_back/docs/deploy-cloud-run.md) |
 | Segurança e privacidade | [`safe_qr_app/docs/12-seguranca-privacidade.md`](./safe_qr_app/docs/12-seguranca-privacidade.md) |
 | Firebase Anonymous | [`safe_qr_app/docs/17-identidade-firebase-anonymous.md`](./safe_qr_app/docs/17-identidade-firebase-anonymous.md) |
 | Postman | [`safe_qr_back/docs/Safe-QR-API.postman_collection.json`](./safe_qr_back/docs/Safe-QR-API.postman_collection.json) |
@@ -262,6 +264,7 @@ cd safe_qr_workers && npm test
 | Gerador com export PNG | ✅ |
 | Histórico local (SQLite) | ✅ |
 | Histórico remoto (API + Pub/Sub) | ✅ |
+| Deploy Cloud Run (API + workers) | ✅ `southamerica-east1` |
 | Blocklist Firestore (clones) | ✅ |
 | Auditoria `scan_events` | ✅ |
 | Publicação em lojas | ❌ fora do escopo |

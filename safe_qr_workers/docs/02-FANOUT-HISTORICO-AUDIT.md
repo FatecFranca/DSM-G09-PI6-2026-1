@@ -127,7 +127,8 @@ Logs esperados:
 | `Evento sem idUser` | Analyze sem Bearer válido | Enviar `Authorization: Bearer` |
 | `Evento sem historyItem` | Mensagem antiga na fila | Purge ou aguardar novos eventos |
 | `PERMISSION_DENIED` Firestore | SA sem `datastore.user` | IAM ou usar JSON Firebase do back |
-| Histórico vazio no app | `consume:history` parado | Subir consumidor + refresh na UI |
+| Histórico vazio no app | Worker `min: 0` ou parado | Cloud Run `min-instances=1`; ver [deploy-cloud-run.md](./deploy-cloud-run.md#troubleshooting) |
+| Histórico vazio no app | `consume:history` local + nuvem | Parar consumidor local |
 
 ---
 

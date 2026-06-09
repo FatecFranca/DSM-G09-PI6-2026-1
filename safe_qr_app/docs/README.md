@@ -38,7 +38,7 @@ Documentação técnica do aplicativo mobile **Safe QR** (`safe_qr_app`).
 | Privacidade mobile (RNF-02) | [`MOBILE-DADOS-EPRIVACIDADE.md`](./MOBILE-DADOS-EPRIVACIDADE.md) |
 | Sprint 1 — entregáveis acadêmicos | [`../../docs/SPRINT-1-ENTREGAVEIS.md`](../../docs/SPRINT-1-ENTREGAVEIS.md) |
 | Integração mobile (backend) | [`../../safe_qr_back/docs/10-integracao-mobile.md`](../../safe_qr_back/docs/10-integracao-mobile.md) |
-| Pub/Sub + histórico assíncrono | [`../../safe_qr_messaging/docs/02-FANOUT-HISTORICO-AUDIT.md`](../../safe_qr_messaging/docs/02-FANOUT-HISTORICO-AUDIT.md) |
+| Pub/Sub + histórico assíncrono | [`../../safe_qr_workers/docs/02-FANOUT-HISTORICO-AUDIT.md`](../../safe_qr_workers/docs/02-FANOUT-HISTORICO-AUDIT.md) |
 | Pub/Sub (produtor back) | [`../../safe_qr_back/docs/13-pubsub-qr-analyzed.md`](../../safe_qr_back/docs/13-pubsub-qr-analyzed.md) |
 | API endpoints (backend) | [`../../safe_qr_back/docs/05-api-endpoints.md`](../../safe_qr_back/docs/05-api-endpoints.md) |
 | READMEs por feature | `lib/features/*/README.md` |

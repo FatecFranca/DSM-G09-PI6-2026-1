@@ -1,11 +1,28 @@
 {
   "info": {
     "name": "Safe QR API (safe-qr-back)",
-    "description": "API REST do Safe QR — health, análise de QR e histórico na nuvem.\n\n## Variáveis\n- `baseUrl` — ex.: http://localhost:3000\n- `firebaseToken` — JWT de getIdToken() (NÃO é o UID)\n- `historyItemId` — UUID do item de histórico\n\n## Auth (analyze + history)\nAuthorization: Bearer {{firebaseToken}}\nO idUser vem do token (decoded.uid), ex.: Vb3ubOjy9RYt9AKpx3VzunBirEc2",
+    "description": "API REST do Safe QR — health, análise de QR e histórico na nuvem.\n\n## Variáveis (nome exato no Postman)\n- **`baseUrl`** — URL base **sem** barra final (use esta na collection)\n- `firebaseToken` — JWT de getIdToken() (NÃO é o UID)\n- `historyItemId` — UUID do item de histórico\n\nProdução: `https://safe-qr-api-214537528312.southamerica-east1.run.app`\n\n> Se você usa `BASE_URL` no Environment, o script da collection copia para `baseUrl` automaticamente.\n> **`{{BASE_URL}}` sozinho não funciona** — o nome da variável é `baseUrl` (camelCase).\n\n## Auth (analyze + history apenas)\n`Authorization: Bearer {{firebaseToken}}` — health **não** precisa de Bearer.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const fromEnv = pm.environment.get('BASE_URL') || pm.environment.get('baseUrl');",
+          "if (fromEnv) {",
+          "  pm.collectionVariables.set('baseUrl', fromEnv.replace(/\\/$/, ''));",
+          "}"
+        ]
+      }
+    }
+  ],
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:3000" },
+    {
+      "key": "baseUrl",
+      "value": "https://safe-qr-api-214537528312.southamerica-east1.run.app"
+    },
     { "key": "firebaseToken", "value": "" },
     { "key": "historyItemId", "value": "a1b2c3d4-e5f6-7890-abcd-ef1234567890" }
   ],
@@ -19,7 +36,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/v1/health",
-            "description": "Verifica se a API está operacional."
+            "description": "Verifica se a API está operacional. **GET** — sem Authorization."
           }
         },
         {
@@ -122,15 +139,7 @@
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{firebaseToken}}" }],
-            "url": {
-              "raw": "{{baseUrl}}/v1/history?limit=100&offset=0",
-              "host": ["{{baseUrl}}"],
-              "path": ["v1", "history"],
-              "query": [
-                { "key": "limit", "value": "100" },
-                { "key": "offset", "value": "0" }
-              ]
-            },
+            "url": "{{baseUrl}}/v1/history?limit=100&offset=0",
             "description": "Lista createdAtMs DESC. Só itens do uid do token."
           }
         },

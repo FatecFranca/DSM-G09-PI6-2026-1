@@ -1,11 +1,12 @@
 # 01 — Pub/Sub Safe QR: especificação técnica de implementação
 
-**Repositório:** `safe_qr_messaging`  
-**Versão do documento:** 1.2  
+**Repositório:** `safe_qr_workers` (antes `safe_qr_messaging`)  
+**Versão do documento:** 1.3  
 **Data:** junho de 2026  
 **Escopo:** Tópico 1 — eventos de análise (`qr.analyzed`). Fan-out com **dois consumidores** (histórico + auditoria).
 
-> **Atualização v1.2:** consumidores gravam Firestore (`history/...` e `scan_events`). Ver **[02-FANOUT-HISTORICO-AUDIT.md](./02-FANOUT-HISTORICO-AUDIT.md)** para o fluxo atual.
+> **Produção:** Cloud Run `safe-qr-worker-history` + `safe-qr-worker-audit` — [deploy-cloud-run.md](./deploy-cloud-run.md).  
+> **Fluxo:** [02-FANOUT-HISTORICO-AUDIT.md](./02-FANOUT-HISTORICO-AUDIT.md).
 
 ---
 

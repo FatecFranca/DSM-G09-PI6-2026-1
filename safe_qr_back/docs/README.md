@@ -14,6 +14,8 @@ Documentação técnica completa da API REST do projeto **Safe QR**. Este backen
 | 06 | [Motor de análise](./06-motor-analise.md) | Heurísticas S1, vereditos, regras |
 | 07 | [Integração Firestore](./07-integracao-firestore.md) | Lista de clones, cache, credenciais |
 | 08 | [Configuração e deploy](./08-configuracao-deploy.md) | `.env`, scripts, produção |
+| — | **[Cloud Run — API](./deploy-cloud-run.md)** | **Deploy `safe-qr-api` + stack completa** |
+| — | **[Cloud Run — workers](../../safe_qr_workers/docs/deploy-cloud-run.md)** | **Deploy history + audit** |
 | 09 | [Testes e qualidade](./09-testes-qualidade.md) | Vitest, ESLint, cobertura |
 | 10 | [Integração mobile](./10-integracao-mobile.md) | Contrato com o app Flutter |
 | 11 | [Roadmap e evolução](./11-roadmap-evolucao.md) | Próximas sprints, gaps, Pub/Sub |
@@ -26,8 +28,9 @@ Documentação técnica completa da API REST do projeto **Safe QR**. Este backen
 - **Como:** Fastify + Zod + heurística local (espelhando o motor do app) + lista opcional de domínios suspeitos no **Firestore**.
 - **Endpoints atuais:** `GET /v1/health`, `POST /v1/qr/analyze` (**Bearer obrigatório**), CRUD `/v1/history` (**Bearer obrigatório**).
 - **Auth:** Firebase ID Token (`getIdToken()`) em analyze e history — `client.idUser` no body não autentica.
-- **Mensageria:** Pub/Sub `qr.analyzed` → `safe_qr_messaging` (histórico + auditoria). Ver doc 13.
+- **Mensageria:** Pub/Sub `qr.analyzed` → `safe_qr_workers` (Cloud Run: `safe-qr-worker-history` + `safe-qr-worker-audit`). Ver doc 13.
 - **Versão:** `0.1.0` (Sprint 1 + Firestore + histórico + Pub/Sub).
+- **Produção (Cloud Run):** https://safe-qr-api-214537528312.southamerica-east1.run.app — ver [deploy-cloud-run.md](./deploy-cloud-run.md).
 
 ## Estrutura do código-fonte
 
@@ -45,6 +48,8 @@ safe_qr_back/
 │   ├── schemas/               # Validação de entrada (Zod)
 │   └── views/                 # Serialização JSON de resposta/erro
 ├── test/                      # Vitest (38 testes)
+├── Dockerfile                 # Imagem Cloud Run
+├── scripts/deploy-cloud-run.ps1
 ├── docs/Safe-QR-API.postman_collection.json
 ├── docs/                      # Esta documentação
 ├── .env.example
@@ -70,4 +75,4 @@ npm run build && npm start   # produção
 
 ---
 
-*Última atualização: junho de 2026 — auth Firebase obrigatória; app Flutter usa `AuthenticatedAppNetwork` (Bearer automático).*
+*Última atualização: junho de 2026 — API em produção no Cloud Run (`southamerica-east1`); app Flutter aponta para HTTPS via `API_BASE_URL`.*

@@ -90,9 +90,33 @@ Postman: importar [`docs/Safe-QR-API.postman_collection.json`](docs/Safe-QR-API.
 
 Logs estruturados incluem **tamanho em bytes** e um **digest curto (SHA-256 truncado)** do conteúdo para correlação **sem** armazenar o texto bruto do QR (**RF-B05** / RNF privacidade).
 
+## Produção (Cloud Run)
+
+| Item | Valor |
+|------|-------|
+| URL | **https://safe-qr-api-214537528312.southamerica-east1.run.app** |
+| Região | `southamerica-east1` |
+| Health | `GET /v1/health` |
+
+Deploy e IAM: [`docs/deploy-cloud-run.md`](docs/deploy-cloud-run.md)
+
+```powershell
+cd safe_qr_back
+.\scripts\deploy-cloud-run.ps1
+```
+
 ## Integração com o app Flutter
 
-Aponte a base URL do cliente HTTP para `http://<host>:<PORT>` (ou HTTPS atrás de proxy) e mantenha os paths conforme `AppEndpoints` no mobile. O app injeta **`Authorization: Bearer <getIdToken()>`** via `AuthenticatedAppNetwork` em analyze e history. Ver [`docs/10-integracao-mobile.md`](docs/10-integracao-mobile.md).
+**Produção** (`safe_qr_app/assets/.env`):
+
+```env
+API_BASE_URL=https://safe-qr-api-214537528312.southamerica-east1.run.app
+ANALYZE_MODE=remote
+```
+
+**Dev local:** `http://<IP-LAN>:3000` com `npm run dev`.
+
+O app injeta **`Authorization: Bearer <getIdToken()>`** via `AuthenticatedAppNetwork`. Ver [`docs/10-integracao-mobile.md`](docs/10-integracao-mobile.md).
 
 ## Licença
 

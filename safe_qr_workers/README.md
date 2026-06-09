@@ -1,6 +1,8 @@
-# safe_qr_messaging
+# safe_qr_workers
 
-Consumidores **Google Cloud Pub/Sub** do projeto **Safe QR** (fan-out). A API publica **uma vez**; dois processos separados gravam **histórico do usuário** e **auditoria** (`scan_events`).
+Consumidores **Google Cloud Pub/Sub** do projeto **Safe QR** (fan-out). A API publica **uma vez**; dois processos gravam **histórico do usuário** e **auditoria** (`scan_events`).
+
+> Pasta `safe_qr_workers` (package npm: `safe-qr-messaging`). Em produção: Cloud Run `safe-qr-worker-history` + `safe-qr-worker-audit`.
 
 ---
 
@@ -67,7 +69,7 @@ Setup manual detalhado: **[docs/01-PUBSUB-IMPLEMENTACAO.md](./docs/01-PUBSUB-IMP
 ## Setup local
 
 ```bash
-cd safe_qr_messaging
+cd safe_qr_workers
 cp .env.example .env
 npm install
 ```
@@ -111,10 +113,21 @@ Reinicie o consumidor após alterar a role (pode levar ~1 min para propagar).
 
 | Comando | Descrição |
 |---------|-----------|
-| `npm run consume:history` | Consumidor histórico (`sub-history`) |
-| `npm run consume:audit` | Consumidor auditoria (`scan_events`) |
+| `npm run consume:history` | Consumidor histórico local (`sub-history`) |
+| `npm run consume:audit` | Consumidor auditoria local (`scan_events`) |
 | `npm run consume:events` | Alias de `consume:audit` |
+| `npm run build` | Compila para `dist/` (Cloud Run) |
+| `.\scripts\deploy-cloud-run.ps1` | Deploy **history + audit** no Cloud Run |
 | `npm test` | Testes unitários |
+
+### Produção (Cloud Run)
+
+```powershell
+cd safe_qr_workers
+.\scripts\deploy-cloud-run.ps1
+```
+
+Serviços: `safe-qr-worker-history`, `safe-qr-worker-audit`. Detalhes: **[docs/deploy-cloud-run.md](./docs/deploy-cloud-run.md)**.
 
 ---
 
@@ -202,7 +215,7 @@ Validação: `src/schemas/qr-analyzed.schema.ts` (Zod).
 ## Estrutura do código
 
 ```
-safe_qr_messaging/
+safe_qr_workers/
 ├── credentials/                 # .gitignore — JSON da SA
 ├── docs/
 │   └── 01-PUBSUB-IMPLEMENTACAO.md
@@ -279,7 +292,7 @@ safe_qr_messaging/
 | Back | `GET /v1/scan-events` (listar auditoria) |
 | Tópico 2 | `safe-qr-blocklist-updates` (consumidor separado) |
 | Opcional | Dead-letter topic + subscription |
-| Opcional | Cloud Run job para consumidor 24/7 |
+| ✅ | Cloud Run `safe-qr-worker-history` + `safe-qr-worker-audit` — ver [docs/deploy-cloud-run.md](./docs/deploy-cloud-run.md) |
 
 ---
 
@@ -289,7 +302,7 @@ safe_qr_messaging/
 safe-qr-mobile/
 ├── safe_qr_app/          # Flutter — Bearer JWT + scan
 ├── safe_qr_back/         # API — produtor Pub/Sub
-└── safe_qr_messaging/    # Este repo — consumidor
+└── safe_qr_workers/      # Este repo — consumidor
 ```
 
 ---

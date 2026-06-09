@@ -10,4 +10,4 @@
 - **Camadas:** `domain`, `data` (`RemoteHistoryRepository` / `HistoryRepositoryImpl`), `presentation`.
 - **Testes:** `test/features/qr_history/`.
 
-Ver também: `safe_qr_messaging/docs/02-FANOUT-HISTORICO-AUDIT.md`, `safe_qr_back/docs/12-api-historico.md`.
+Ver também: `safe_qr_workers/docs/02-FANOUT-HISTORICO-AUDIT.md`, `safe_qr_back/docs/12-api-historico.md`.

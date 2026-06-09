@@ -151,4 +151,4 @@ Testes de integração com Firebase real exigem dispositivo/emulador e Auth ativ
 | `network-request-failed` | Sem internet | Wi‑Fi/dados móveis |
 | Bootstrap identity falhou | Auth ou rede | Ver `SafeQR.Identity` no logcat |
 | `401` na API | Token inválido/expirado | Reiniciar app; verificar Firebase |
-| Histórico vazio após scan | `consume:history` parado | `cd safe_qr_messaging && npm run consume:history` |
+| Histórico vazio após scan | Worker Cloud Run parado (`min: 0`) | Ver [`safe_qr_workers/docs/deploy-cloud-run.md`](../../safe_qr_workers/docs/deploy-cloud-run.md) |

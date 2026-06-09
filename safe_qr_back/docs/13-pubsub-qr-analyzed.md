@@ -13,9 +13,9 @@ consume:history → Firestore history/{idUser}/items/{eventId}
 consume:audit   → Firestore scan_events/{eventId}   (opcional)
 ```
 
-O histórico **não** é gravado síncrono no analyze — só pelo consumidor `safe_qr_messaging`.
+O histórico **não** é gravado síncrono no analyze — só pelo worker `safe-qr-worker-history` (Cloud Run) ou `consume:history` (local).
 
-Fan-out: ver [safe_qr_messaging/docs/02-FANOUT-HISTORICO-AUDIT.md](../../safe_qr_messaging/docs/02-FANOUT-HISTORICO-AUDIT.md).
+Fan-out: ver [safe_qr_workers/docs/02-FANOUT-HISTORICO-AUDIT.md](../../safe_qr_workers/docs/02-FANOUT-HISTORICO-AUDIT.md).
 
 ---
 
@@ -106,18 +106,22 @@ Com Bearer obrigatório, todo `200` traz `idUser` e `historyItem` preenchido.
 
 ---
 
-## Consumidores (`safe_qr_messaging`)
+## Consumidores (`safe_qr_workers`)
+
+**Produção (Cloud Run):** `safe-qr-worker-history`, `safe-qr-worker-audit` — ver [safe_qr_workers/docs/deploy-cloud-run.md](../../safe_qr_workers/docs/deploy-cloud-run.md).
+
+**Local (dev):**
 
 ```bash
-cd safe_qr_messaging
-npm run consume:history   # obrigatório — histórico do app
-npm run consume:audit     # opcional — scan_events
+cd safe_qr_workers
+npm run consume:history   # histórico do app
+npm run consume:audit     # scan_events (opcional)
 ```
 
-| Script | Subscription | Destino |
-|--------|--------------|---------|
-| `consume:history` | `safe-qr-analyze-events-sub-history` | `history/{idUser}/items/{id}` |
-| `consume:audit` | `safe-qr-analyze-events-sub` | `scan_events/{eventId}` |
+| Destino | Subscription | Cloud Run / script |
+|---------|--------------|-------------------|
+| `history/{idUser}/items/{id}` | `safe-qr-analyze-events-sub-history` | `safe-qr-worker-history` / `consume:history` |
+| `scan_events/{eventId}` | `safe-qr-analyze-events-sub` | `safe-qr-worker-audit` / `consume:audit` |
 
 Logs esperados:
 - `pubsub_qr_analyzed_published` (back)

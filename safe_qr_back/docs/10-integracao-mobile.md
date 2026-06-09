@@ -168,7 +168,7 @@ Implementado via `DioAppNetwork` → `AppHttpException` / `UserIdentityException
 | Operação | Quem faz |
 |----------|----------|
 | Scan → analyze | App (`POST /v1/qr/analyze` + Bearer) — **sem** INSERT local |
-| Gravar scan | Back + `safe_qr_messaging` (`consume:history`) |
+| Gravar scan | Back + `safe-qr-worker-history` (Cloud Run) ou `consume:history` (local) |
 | Listar / apagar | App (`RemoteHistoryRepository` + Bearer) |
 | QR gerado | App (`POST /v1/history` + Bearer) |
 
@@ -181,17 +181,25 @@ Ver [12-api-historico.md](./12-api-historico.md) e [13-pubsub-qr-analyzed.md](./
 | App Flutter | `firebase_auth` | Sessão anónima → `getIdToken()` → Bearer |
 | App Flutter | `firebase_core` | Inicialização |
 | Backend | `firebase-admin` | `verifyIdToken`, blocklist, histórico Firestore |
-| `safe_qr_messaging` | `firebase-admin` | Consumidor Pub/Sub → Firestore |
+| `safe_qr_workers` | `firebase-admin` | Consumidor Pub/Sub → Firestore (Cloud Run) |
 
 ## Testar integração manualmente
 
-1. Subir backend: `cd safe_qr_back && npm run dev`
-2. Subir consumidor: `cd safe_qr_messaging && npm run consume:history`
-3. Descobrir IP: `ipconfig` (Windows) ou `ip a`
-4. Configurar app: `API_BASE_URL=http://<IP>:3000`, `ANALYZE_MODE=remote`
-5. Rebuild Flutter; garantir Firebase Anonymous ativo no Console
-6. Escanear QR → log back `event: qr_analyze` com `idUser`
-7. Aba Histórico → pull-to-refresh → item aparece via `GET /v1/history`
+### Produção (Cloud Run)
+
+1. App: `API_BASE_URL=https://safe-qr-api-214537528312.southamerica-east1.run.app`, `ANALYZE_MODE=remote`
+2. Reiniciar o app Flutter (full restart)
+3. Firebase Anonymous Auth ativo no Console
+4. Escanear QR → analyze via HTTPS + Bearer
+5. Histórico: workers **`safe-qr-worker-history`** no Cloud Run (ou `consume:history` local em dev)
+
+### Desenvolvimento local
+
+1. Backend: `cd safe_qr_back && npm run dev`
+2. Consumidor: `cd safe_qr_workers && npm run consume:history`
+3. App: `API_BASE_URL=http://<IP-LAN>:3000`, `ANALYZE_MODE=remote`
+4. Escanear QR → log `event: qr_analyze` com `idUser`
+5. Histórico → pull-to-refresh → `GET /v1/history`
 
 Documentação app: [`../../safe_qr_app/docs/07-api-integracao.md`](../../safe_qr_app/docs/07-api-integracao.md)
 

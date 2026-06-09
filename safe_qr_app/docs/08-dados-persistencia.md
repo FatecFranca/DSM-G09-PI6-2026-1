@@ -5,7 +5,7 @@
 | Armazenamento | Tecnologia | Conteúdo |
 |---------------|------------|----------|
 | Histórico (local) | SQLite (`sqflite`) | Scans e QR gerados — `ANALYZE_MODE=local` |
-| Histórico (remoto) | Firestore via API | `GET /v1/history` — scans via Pub/Sub + `consume:history` |
+| Histórico (remoto) | Firestore via API | `GET /v1/history` — scans via Pub/Sub + `safe-qr-worker-history` |
 | Identidade | Firebase Anonymous Auth | UID + JWT (sem conta real) |
 | Preferências | `shared_preferences` | Modo de tema |
 | Config runtime | `assets/.env` | URL API, modo análise, timeouts |

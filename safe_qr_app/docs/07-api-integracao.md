@@ -233,14 +233,14 @@ Configuração Dio:
 | Operação | Quem faz |
 |----------|----------|
 | Scan → analyze | App (`POST /v1/qr/analyze` + Bearer) — **sem** gravar histórico no app |
-| Gravar scan no histórico | Back + `safe_qr_messaging` (Pub/Sub → Firestore) |
+| Gravar scan no histórico | Back + `safe-qr-worker-history` (Cloud Run) ou `consume:history` (local) |
 | Listar histórico | App (`GET /v1/history` + Bearer) via `RemoteHistoryRepository` |
 | Apagar item(ns) | App (`DELETE /v1/history/{id}` + Bearer) |
 | QR gerado | App (`POST /v1/history` + Bearer) ao salvar no gerador |
 
 Modo `ANALYZE_MODE=local`: histórico em **SQLite** (`HistoryRepositoryImpl`).
 
-Ver: [08-dados-persistencia.md](./08-dados-persistencia.md), [safe_qr_messaging/docs/02-FANOUT-HISTORICO-AUDIT.md](../../safe_qr_messaging/docs/02-FANOUT-HISTORICO-AUDIT.md).
+Ver: [08-dados-persistencia.md](./08-dados-persistencia.md), [safe_qr_workers/docs/02-FANOUT-HISTORICO-AUDIT.md](../../safe_qr_workers/docs/02-FANOUT-HISTORICO-AUDIT.md).
 
 ---
 
@@ -250,14 +250,14 @@ Ver: [08-dados-persistencia.md](./08-dados-persistencia.md), [safe_qr_messaging/
 |------------|-----|-------------|
 | App Flutter | `firebase_core` + `firebase_auth` | Sessão anónima → Bearer JWT |
 | Backend | `firebase-admin` | Blocklist + verify token + histórico CRUD |
-| `safe_qr_messaging` | `firebase-admin` | Grava `history/...` e `scan_events` |
+| `safe_qr_workers` | `firebase-admin` | Grava `history/...` e `scan_events` (Cloud Run) |
 
 ---
 
 ## Testar integração
 
 1. Subir backend: `cd safe_qr_back && npm run dev`
-2. Subir consumidor histórico: `cd safe_qr_messaging && npm run consume:history`
+2. Workers em produção: `safe-qr-worker-history` no Cloud Run — ou local: `cd safe_qr_workers && npm run consume:history`
 3. Descobrir IP: `ipconfig` (Windows)
 4. Configurar `assets/.env`: `API_BASE_URL=http://<IP>:3000`, `ANALYZE_MODE=remote`
 5. Rebuild Flutter: `flutter run`

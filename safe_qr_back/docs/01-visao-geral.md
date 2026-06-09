@@ -42,7 +42,7 @@ O backend atua como **camada de análise** entre a leitura do QR e a decisão do
 
 - CRUD completo de outros recursos no servidor
 - Motor avançado (ML, sandbox, head requests, typosquatting)
-- Deploy documentado em nuvem pública
+- Deploy adicional em outros PaaS (Render, Railway, etc.)
 
 ## Atores e integrações
 
