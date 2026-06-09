@@ -1,0 +1,101 @@
+/// Textos exibidos ao usuário (pt-BR). Evita duplicação e facilita l10n futura.
+abstract final class AppStrings {
+  static const String appName = 'Safe QR';
+  static const String tabReader = 'Ler';
+  static const String tabGenerator = 'Gerar';
+  static const String tabHistory = 'Histórico';
+  static const String splashTagline = 'Analise antes de abrir';
+  static const String readerTitle = 'Aponte para o código';
+  static const String readerHelpRemote =
+      'Enquadre o código na área da câmera. Em seguida mostramos se o destino parece seguro — só então você decide abrir ou não.';
+  static const String readerHelpLocal =
+      'Enquadre o código na área da câmera. Fazemos uma verificação rápida aqui no aparelho; em conexão com a internet a checagem pode ser mais completa.';
+  static const String readerModeLocalBanner =
+      'Neste modo a verificação fica no celular. Prefira códigos de lugares e pessoas em que você confia.';
+  static const String permissionCameraDenied = 'Permissão da câmera negada. Ative nas configurações do sistema.';
+  static const String analyzing = 'Analisando...';
+  static const String readerLoadingTitle = 'Analisando QR Code';
+  static const String readerLoadingSubtitle = 'Por favor, aguarde…';
+  static const String readerResultStayInApp = 'Permanecer no app';
+  static const String readerResultOpenDestination = 'Abrir no navegador';
+  static const String readerResultCopyDone = 'Copiado para a área de transferência.';
+  static const String readerResultHint = 'A decisão é sua: abra o destino com cuidado ou fique no app.';
+  static const String readerResultNotUrlHint = 'Isto não parece um link HTTP/HTTPS. Use copiar se quiser usar o texto em outro app.';
+  static const String readerResultCannotOpen = 'Não foi possível abrir o destino com os apps disponíveis.';
+  static const String readerResultNotUrlSnack = 'Este conteúdo não parece um URL. Use copiar.';
+  static const String identityError =
+      'Não foi possível identificar o dispositivo. Verifique a ligação e as definições do Firebase.';
+  static const String networkError = 'Falha de rede. Tente de novo em instantes.';
+  static const String timeoutError = 'O servidor demorou a responder. Tente de novo.';
+  static const String invalidResponse = 'Resposta inválida do servidor.';
+  static const String cancel = 'Cancelar';
+  static const String openLink = 'Abrir no navegador';
+  static const String copy = 'Copiar';
+  static const String backToReader = 'Voltar ao leitor';
+  static const String safeLabel = 'Seguro';
+  static const String suspiciousLabel = 'Suspeito';
+  static const String unsafeLabel = 'Inseguro';
+  static const String unknownLabel = 'Indeterminado';
+  static const String resultTitle = 'Resultado';
+  static const String reasonsTitle = 'Por quê';
+  static const String rawContent = 'Conteúdo lido';
+  static const String generatorTitle = 'Gerar QR';
+  static const String generatorHeroSubtitle = 'Escolha o tipo de QR, preencha os campos e toque em Gerar QR Code. Na próxima tela você vê o código, salva na galeria ou compartilha — e ele já fica guardado no histórico.';
+  static const String generatorTypeLabel = 'Tipo de QR Code';
+  static const String generatorTypePlain = 'Texto';
+  static const String generatorTypeUrl = 'URL / site';
+  static const String generatorTypeImage = 'Imagem (link)';
+  static const String generatorTypeWifi = 'Rede Wi‑Fi';
+  static const String generatorTypeEmail = 'E‑mail';
+  static const String generatorTypePhone = 'Telefone (ligar)';
+  static const String generatorTypeSms = 'SMS';
+  static const String generatorFieldPlain = 'Conteúdo (texto)';
+  static const String generatorFieldUrl = 'URL ou domínio (https é acrescentado se faltar o esquema)';
+  static const String generatorFieldImageUrl = 'URL da imagem (https…, .png, .jpg, etc.)';
+  static const String generatorEmailTo = 'E‑mail do destinatário';
+  static const String generatorEmailSubject = 'Assunto (opcional)';
+  static const String generatorEmailBody = 'Mensagem (opcional)';
+  static const String generatorFieldPhone = 'Número (ex.: +55 11 90000-0000)';
+  static const String generatorSmsNumber = 'Número (SMS)';
+  static const String generatorSmsMessage = 'Mensagem (opcional)';
+  static const String generatorWifiSsid = 'Nome da rede (SSID)';
+  static const String generatorWifiPassword = 'Senha';
+  static const String generatorWifiSecurity = 'Criptografia';
+  static const String generatorWifiWep = 'WEP';
+  static const String generatorWifiWpa = 'WPA / WPA2';
+  static const String generatorWifiOpen = 'Aberta (sem senha)';
+  static const String generatorBtnGenerate = 'Gerar QR Code';
+  static const String generatorLoadingTitle = 'Gerando QR Code';
+  static const String generatorLoadingSubtitle = 'Por favor, aguarde…';
+  static const String generatorSaveHistory = 'Salvar no histórico';
+  static const String generatorResultTitle = 'QR gerado';
+  static const String generatorSaveToDevice = 'Salvar no dispositivo';
+  static const String generatorShare = 'Compartilhar';
+  static const String generatorBackToForm = 'Voltar ao formulário';
+  static const String generatorSavedToDevice = 'Imagem salva no dispositivo com sucesso.';
+  static const String generatorSaveToDeviceFailed = 'Não foi possível salvar no dispositivo.';
+  static const String generatorHistorySaveFailed = 'Não foi possível salvar no histórico.';
+  static const String generatorPreviewTitle = 'Pré-visualização';
+  static const String generatorPreviewEmpty = 'Ainda sem QR. Preencha os campos e toque em Gerar QR Code.';
+  static const String historyEmpty = 'Ainda não há leituras ou QR gerados.';
+  static const String historySubtitleRemote =
+      'Leituras salvas na sua conta. Apague o que já não for útil.';
+  static const String historySubtitleLocal =
+      'Tudo fica no dispositivo. Apague o que já não for útil.';
+  static const String historyClearConfirmRemote =
+      'Esta ação apaga todo o histórico na nuvem desta conta.';
+  static const String historyClearConfirmLocal =
+      'Esta ação apaga o histórico local deste aparelho.';
+  static const String historyDeleteFailed = 'Não foi possível apagar este item. Tente de novo.';
+  static const String historyClearFailed = 'Não foi possível limpar o histórico. Tente de novo.';
+  static const String historyDeleteSelected = 'Apagar selecionados';
+  static const String historyClearSelection = 'Limpar seleção';
+  static const String historyDeleteSelectedConfirmTitle = 'Apagar selecionados?';
+  static const String historyClear = 'Limpar tudo';
+  static const String historyDelete = 'Excluir';
+  static const String historyTitle = 'Histórico';
+  static const String themeLight = 'Tema claro';
+  static const String themeDark = 'Tema escuro';
+  static const String scanType = 'Leitura';
+  static const String genType = 'Gerado';
+}

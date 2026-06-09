@@ -1,0 +1,99 @@
+# Safe QR — API (`safe-qr-back`)
+
+Backend **Node.js (TypeScript)** do projeto Safe QR, alinhado ao **Sprint 1** em [`../safe-qr-mobile/docs/SPRINT-1-ENTREGAVEIS.md`](../safe-qr-mobile/docs/SPRINT-1-ENTREGAVEIS.md): **Fastify**, validação com **Zod**, logs estruturados (**Pino**), contrato REST versionado em **`/v1`**.
+
+## Arquitetura (MVC + desacoplamento)
+
+| Camada | Pasta | Papel |
+|--------|--------|--------|
+| **Rotas** | `src/routes/` | Registro HTTP → controllers (sem regra de negócio). |
+| **Controllers** | `src/controllers/` | Orquestra validação, limites, logging da requisição; delega ao **Service**. |
+| **Services** | `src/services/` | Regras de análise (heurística S1, espelhando o motor local do app Flutter). |
+| **Models** | `src/models/` | Tipos de domínio (`QrAnalyzeResultModel`, vereditos). |
+| **Views** | `src/views/` | Serialização do corpo de resposta / erros padronizados (`4xx`/`5xx` + JSON). |
+| **Schemas** | `src/schemas/` | Contratos de entrada (Zod). |
+| **Config / Lib** | `src/config/`, `src/lib/` | Variáveis de ambiente tipadas e fábrica de logger. |
+
+### Lista de clones (Firestore)
+
+Com **`GOOGLE_APPLICATION_CREDENTIALS`** (ficheiro JSON da conta de serviço) ou **`FIREBASE_SERVICE_ACCOUNT_JSON`** (JSON inline), a API lê o documento **`suspicious_hosts/clones`**, campo **`urls`** (array de URLs ou hosts). Se o hostname do QR coincidir com uma entrada (ou for subdomínio dela), o veredito passa a **`unsafe`**. Sem credenciais, esse passo é omitido (heurística S1 apenas). Ver `.env.example` e `FIRESTORE_SUSPICIOUS_CACHE_MS`.
+
+## Requisitos
+
+- **Node.js 20+** (LTS recomendado).
+
+## Configuração
+
+```bash
+cd safe-qr-back
+cp .env.example .env
+npm install
+```
+
+Variáveis principais (ver `.env.example`):
+
+- `PORT` — porta HTTP (padrão `3000`).
+- `MAX_RAW_CONTENT_BYTES` — limite do corpo UTF-8 para `rawContent` (retorno `413` se exceder).
+- `LOG_LEVEL` — nível Pino (`info`, `debug`, …).
+
+## Scripts
+
+| Comando | Descrição |
+|---------|-----------|
+| `npm run dev` | Servidor com reload (`tsx watch`). |
+| `npm run build` | Compila para `dist/` (ESM). |
+| `npm start` | Executa `dist/server.js` (após `build`). |
+| `npm test` | Vitest (health, analyze, history, pubsub — 38 testes). |
+| `npm run lint` | ESLint. |
+
+## Endpoints (S1)
+
+### `GET /v1/health` e `GET /health`
+
+Health check (**RF-B01**): `200` + JSON `{ status, service, version }`.
+
+### `POST /v1/qr/analyze`
+
+**Auth:** `Authorization: Bearer <Firebase ID Token>` (obrigatório — mesmo contrato do histórico).
+
+**RF-B02–B04**: corpo JSON validado:
+
+```json
+{
+  "rawContent": "https://exemplo.com",
+  "client": { "appVersion": "1.0.0", "platform": "android" }
+}
+```
+
+Resposta `200` no formato esperado pelo app (`requestId`, `verdict`, `safeToOpen`, `reasons`, `parsed`).
+
+- `401` — Bearer ausente ou JWT inválido.
+- `400` — validação (corpo inválido).
+- `413` — conteúdo acima de `MAX_RAW_CONTENT_BYTES`.
+
+### Histórico na nuvem — `/v1/history`
+
+Espelha o SQLite local do app. Documentação completa: [`docs/12-api-historico.md`](docs/12-api-historico.md).
+
+| Método | Path | Descrição |
+|--------|------|-----------|
+| `POST` | `/v1/history` | Upsert de item (`scan` ou `generated`) |
+| `GET` | `/v1/history` | Lista do utilizador (`createdAtMs DESC`) |
+| `DELETE` | `/v1/history/{id}` | Apaga um item |
+| `DELETE` | `/v1/history` | Limpa todo o histórico do utilizador |
+
+Auth: `Authorization: Bearer <Firebase ID Token>` (`getIdToken()` no app). O `idUser` vem do JWT (`decoded.uid`).
+
+Postman: importar [`docs/Safe-QR-API.postman_collection.json`](docs/Safe-QR-API.postman_collection.json). Referência: [`docs/05-api-endpoints.md`](docs/05-api-endpoints.md).
+
+## Privacidade e logs (S1)
+
+Logs estruturados incluem **tamanho em bytes** e um **digest curto (SHA-256 truncado)** do conteúdo para correlação **sem** armazenar o texto bruto do QR (**RF-B05** / RNF privacidade).
+
+## Integração com o app Flutter
+
+Aponte a base URL do cliente HTTP para `http://<host>:<PORT>` (ou HTTPS atrás de proxy) e mantenha os paths conforme `AppEndpoints` no mobile. O app injeta **`Authorization: Bearer <getIdToken()>`** via `AuthenticatedAppNetwork` em analyze e history. Ver [`docs/10-integracao-mobile.md`](docs/10-integracao-mobile.md).
+
+## Licença
+
+Definir conforme política do grupo / curso (repositório acadêmico).
