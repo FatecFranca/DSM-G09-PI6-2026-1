@@ -1,6 +1,6 @@
 # 05 — API — Endpoints (referência completa)
 
-**Base URL (produção):** `https://safe-qr-api-214537528312.southamerica-east1.run.app`  
+**Base URL (produção):** `https://safe-qr-api-iw32tfemba-rj.a.run.app`  
 **Base URL (dev):** `http://localhost:3000` ou `http://<IP-LAN>:3000`  
 **Versionamento:** prefixo `/v1`  
 **Formato:** JSON (`Content-Type: application/json`)  
@@ -14,7 +14,7 @@
 
 | Variável | Exemplo | Uso |
 |----------|---------|-----|
-| `baseUrl` | `https://safe-qr-api-214537528312.southamerica-east1.run.app` | URL base (**camelCase** — não use `BASE_URL` no Postman) |
+| `baseUrl` | `https://safe-qr-api-iw32tfemba-rj.a.run.app` | URL base (**camelCase** — não use `BASE_URL` no Postman) |
 | `firebaseToken` | `eyJhbGciOiJSUzI1NiIs...` | JWT de `getIdToken()` — **analyze + history** |
 | `historyItemId` | `a1b2c3d4-e5f6-7890-abcd-ef1234567890` | UUID do item |
 

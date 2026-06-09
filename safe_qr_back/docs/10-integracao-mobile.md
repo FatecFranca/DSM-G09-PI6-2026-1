@@ -187,7 +187,7 @@ Ver [12-api-historico.md](./12-api-historico.md) e [13-pubsub-qr-analyzed.md](./
 
 ### Produção (Cloud Run)
 
-1. App: `API_BASE_URL=https://safe-qr-api-214537528312.southamerica-east1.run.app`, `ANALYZE_MODE=remote`
+1. App: `API_BASE_URL=https://safe-qr-api-iw32tfemba-rj.a.run.app`, `ANALYZE_MODE=remote`
 2. Reiniciar o app Flutter (full restart)
 3. Firebase Anonymous Auth ativo no Console
 4. Escanear QR → analyze via HTTPS + Bearer

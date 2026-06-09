@@ -20,6 +20,10 @@ const envSchema = z.object({
   PUBSUB_TOPIC: z.string().default('safe-qr-analyze-events'),
   /** Credencial dedicada ao publisher Pub/Sub (separada do Firestore). */
   PUBSUB_GOOGLE_APPLICATION_CREDENTIALS: z.string().optional(),
+  /** Chave do painel admin (`safe_qr_web`) — header `X-Admin-Key`. */
+  ADMIN_API_KEY: z.string().min(8).optional(),
+  /** Coleção Firestore de auditoria (gravada pelos workers). */
+  SCAN_EVENTS_COLLECTION: z.string().min(1).default('scan_events'),
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -20,7 +20,13 @@ export async function buildApp(env: Env, logger: Logger): Promise<FastifyInstanc
   await app.register(cors, {
     origin: true,
     methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'x-request-id', 'Authorization'],
+    allowedHeaders: [
+      'Content-Type',
+      'x-request-id',
+      'Authorization',
+      'X-Admin-Key',
+      'x-admin-key',
+    ],
   });
 
   registerV1Routes(app, env, logger);

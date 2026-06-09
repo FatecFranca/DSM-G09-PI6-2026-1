@@ -94,7 +94,7 @@ Logs estruturados incluem **tamanho em bytes** e um **digest curto (SHA-256 trun
 
 | Item | Valor |
 |------|-------|
-| URL | **https://safe-qr-api-214537528312.southamerica-east1.run.app** |
+| URL | **https://safe-qr-api-iw32tfemba-rj.a.run.app** |
 | Região | `southamerica-east1` |
 | Health | `GET /v1/health` |
 
@@ -110,7 +110,7 @@ cd safe_qr_back
 **Produção** (`safe_qr_app/assets/.env`):
 
 ```env
-API_BASE_URL=https://safe-qr-api-214537528312.southamerica-east1.run.app
+API_BASE_URL=https://safe-qr-api-iw32tfemba-rj.a.run.app
 ANALYZE_MODE=remote
 ```
 

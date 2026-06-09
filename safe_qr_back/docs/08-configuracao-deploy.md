@@ -66,7 +66,7 @@ O build usa `tsconfig.build.json` (emite ESM para `dist/`).
 ### Produção (Cloud Run)
 
 ```env
-API_BASE_URL=https://safe-qr-api-214537528312.southamerica-east1.run.app
+API_BASE_URL=https://safe-qr-api-iw32tfemba-rj.a.run.app
 ANALYZE_MODE=remote
 ```
 

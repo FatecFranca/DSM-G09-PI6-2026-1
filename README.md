@@ -79,6 +79,7 @@ flowchart TB
 | [`safe_qr_app/`](./safe_qr_app/) | App mobile (leitor, gerador, histórico) | Flutter · Dart 3.11 | `1.0.0+1` |
 | [`safe_qr_back/`](./safe_qr_back/) | API REST de análise e histórico | Node 20 · Fastify · TypeScript | `0.1.0` |
 | [`safe_qr_workers/`](./safe_qr_workers/) | Consumidores Pub/Sub (histórico + auditoria) | Node 20 · TypeScript | `0.3.0` |
+| [`safe_qr_web/`](./safe_qr_web/) | Painel admin web (eventos, blocklist) | React 19 · Vite · TypeScript | `0.1.0` |
 
 ---
 
@@ -107,6 +108,13 @@ flowchart TB
 - `npm run consume:audit` → `scan_events/{eventId}`
 - Fan-out: um publish, duas subscriptions, dois destinos Firestore
 
+### Web (`safe_qr_web`)
+
+- Dashboard com estatísticas de vereditos
+- Lista de eventos de auditoria (`GET /v1/scan-events`)
+- Gestão da blocklist (`/v1/admin/blocklist`)
+- Auth via `X-Admin-Key` (`ADMIN_API_KEY` no back)
+
 ---
 
 ## Stack tecnológica
@@ -114,6 +122,7 @@ flowchart TB
 | Camada | Tecnologias |
 |--------|-------------|
 | Mobile | Flutter, Provider, get_it, Dio, sqflite, mobile_scanner, Firebase Auth |
+| Web | React, Vite, TanStack Query, Tailwind CSS |
 | API | Fastify, Zod, Pino, firebase-admin, @google-cloud/pubsub |
 | Workers | @google-cloud/pubsub, firebase-admin, Zod, Pino |
 | Nuvem | Firebase (Auth), Firestore, Google Cloud Pub/Sub |
@@ -178,11 +187,33 @@ URLs e IAM: [`safe_qr_back/docs/deploy-cloud-run.md`](./safe_qr_back/docs/deploy
 App (`safe_qr_app/assets/.env`):
 
 ```env
-API_BASE_URL=https://safe-qr-api-214537528312.southamerica-east1.run.app
+API_BASE_URL=https://safe-qr-api-iw32tfemba-rj.a.run.app
 ANALYZE_MODE=remote
 ```
 
-### 4. Stack local (histórico assíncrono em dev)
+### 4. Painel web — admin
+
+**Dev local:**
+
+```bash
+cd safe_qr_web
+cp .env.example .env
+npm install
+npm run dev
+```
+
+No `safe_qr_back/.env`: `ADMIN_API_KEY=sua-chave-segura-aqui` (mín. 8 caracteres).
+
+**Produção — Firebase Hosting:**
+
+```powershell
+cd safe_qr_web
+.\scripts\deploy-firebase-hosting.ps1
+```
+
+→ https://safe-qr-app.web.app — ver [`safe_qr_web/docs/deploy-firebase-hosting.md`](./safe_qr_web/docs/deploy-firebase-hosting.md)
+
+### 5. Stack local (histórico assíncrono em dev)
 
 ```bash
 cd safe_qr_workers
@@ -207,6 +238,9 @@ cd safe_qr_back && npm test
 
 # Workers
 cd safe_qr_workers && npm test
+
+# Web
+cd safe_qr_web && npm test
 ```
 
 ---
@@ -220,6 +254,7 @@ cd safe_qr_workers && npm test
 | App | [`safe_qr_app/docs/README.md`](./safe_qr_app/docs/README.md) |
 | API | [`safe_qr_back/docs/README.md`](./safe_qr_back/docs/README.md) |
 | Workers | [`safe_qr_workers/README.md`](./safe_qr_workers/README.md) |
+| Web | [`safe_qr_web/README.md`](./safe_qr_web/README.md) |
 
 ### Leitura recomendada
 
@@ -232,6 +267,7 @@ cd safe_qr_workers && npm test
 | Histórico na nuvem | [`safe_qr_back/docs/12-api-historico.md`](./safe_qr_back/docs/12-api-historico.md) |
 | Pub/Sub e fan-out | [`safe_qr_workers/docs/02-FANOUT-HISTORICO-AUDIT.md`](./safe_qr_workers/docs/02-FANOUT-HISTORICO-AUDIT.md) |
 | Deploy Cloud Run | [`safe_qr_back/docs/deploy-cloud-run.md`](./safe_qr_back/docs/deploy-cloud-run.md) |
+| Deploy Firebase Hosting (web) | [`safe_qr_web/docs/deploy-firebase-hosting.md`](./safe_qr_web/docs/deploy-firebase-hosting.md) |
 | Segurança e privacidade | [`safe_qr_app/docs/12-seguranca-privacidade.md`](./safe_qr_app/docs/12-seguranca-privacidade.md) |
 | Firebase Anonymous | [`safe_qr_app/docs/17-identidade-firebase-anonymous.md`](./safe_qr_app/docs/17-identidade-firebase-anonymous.md) |
 | Postman | [`safe_qr_back/docs/Safe-QR-API.postman_collection.json`](./safe_qr_back/docs/Safe-QR-API.postman_collection.json) |
@@ -245,6 +281,7 @@ cd safe_qr_workers && npm test
 | Arquivo | Onde |
 |---------|------|
 | `assets/.env` | `safe_qr_app` |
+| `.env`, `.env.production`, `.env.local` | `safe_qr_web` |
 | `.env` | `safe_qr_back`, `safe_qr_workers` |
 | `credentials/*.json` | service accounts GCP |
 | `*-firebase-adminsdk-*.json` | chaves admin Firebase |

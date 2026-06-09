@@ -30,7 +30,7 @@ Documentação técnica completa da API REST do projeto **Safe QR**. Este backen
 - **Auth:** Firebase ID Token (`getIdToken()`) em analyze e history — `client.idUser` no body não autentica.
 - **Mensageria:** Pub/Sub `qr.analyzed` → `safe_qr_workers` (Cloud Run: `safe-qr-worker-history` + `safe-qr-worker-audit`). Ver doc 13.
 - **Versão:** `0.1.0` (Sprint 1 + Firestore + histórico + Pub/Sub).
-- **Produção (Cloud Run):** https://safe-qr-api-214537528312.southamerica-east1.run.app — ver [deploy-cloud-run.md](./deploy-cloud-run.md).
+- **Produção (Cloud Run):** https://safe-qr-api-iw32tfemba-rj.a.run.app — ver [deploy-cloud-run.md](./deploy-cloud-run.md).
 
 ## Estrutura do código-fonte
 

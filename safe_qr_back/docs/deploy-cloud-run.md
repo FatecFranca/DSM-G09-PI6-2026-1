@@ -6,7 +6,7 @@ Guia passo a passo para publicar o `safe-qr-api` no mesmo projeto Firebase **`sa
 
 | Serviço Cloud Run | URL / papel |
 |-------------------|-------------|
-| **`safe-qr-api`** | https://safe-qr-api-214537528312.southamerica-east1.run.app — API pública |
+| **`safe-qr-api`** | https://safe-qr-api-iw32tfemba-rj.a.run.app — API pública |
 | **`safe-qr-worker-history`** | interno — consumidor histórico |
 | **`safe-qr-worker-audit`** | interno — consumidor auditoria |
 
@@ -17,7 +17,7 @@ Guia passo a passo para publicar o `safe-qr-api` no mesmo projeto Firebase **`sa
 | **Health API** | `GET /v1/health` → `200` + `{ "status": "ok", ... }` |
 
 ```powershell
-curl https://safe-qr-api-214537528312.southamerica-east1.run.app/v1/health
+curl https://safe-qr-api-iw32tfemba-rj.a.run.app/v1/health
 ```
 
 ### App Flutter (configurado)
@@ -25,7 +25,7 @@ curl https://safe-qr-api-214537528312.southamerica-east1.run.app/v1/health
 `safe_qr_app/assets/.env`:
 
 ```env
-API_BASE_URL=https://safe-qr-api-214537528312.southamerica-east1.run.app
+API_BASE_URL=https://safe-qr-api-iw32tfemba-rj.a.run.app
 ANALYZE_MODE=remote
 ```
 
@@ -122,10 +122,10 @@ Ou rode: `.\scripts\fix-cloud-run-iam.ps1`
 
 ```powershell
 # Health
-curl https://safe-qr-api-214537528312.southamerica-east1.run.app/v1/health
+curl https://safe-qr-api-iw32tfemba-rj.a.run.app/v1/health
 
 # Analyze (substituir <JWT> por getIdToken() do app)
-curl -X POST https://safe-qr-api-214537528312.southamerica-east1.run.app/v1/qr/analyze `
+curl -X POST https://safe-qr-api-iw32tfemba-rj.a.run.app/v1/qr/analyze `
   -H "Content-Type: application/json" `
   -H "Authorization: Bearer <JWT>" `
   -d '{"rawContent":"https://example.com","client":{"platform":"android"}}'
@@ -182,6 +182,21 @@ O Cloud Build executa `npm run build` dentro do `Dockerfile`. Vitest (`npm test`
 ```powershell
 npm run build && npm test
 ```
+
+---
+
+## Painel admin (`safe_qr_web`) — `ADMIN_API_KEY`
+
+O painel web (Firebase Hosting) autentica com header `X-Admin-Key`. Defina a mesma chave na API:
+
+```powershell
+gcloud run services update safe-qr-api `
+  --region southamerica-east1 `
+  --project safe-qr-app `
+  --update-env-vars "ADMIN_API_KEY=SUA_CHAVE_SEGURA_AQUI"
+```
+
+Deploy do painel: [`../../safe_qr_web/docs/deploy-firebase-hosting.md`](../../safe_qr_web/docs/deploy-firebase-hosting.md)
 
 ---
 

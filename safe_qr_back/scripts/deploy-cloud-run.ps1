@@ -62,3 +62,5 @@ Write-Host "Próximos passos:" -ForegroundColor Yellow
 Write-Host "  1. Conceder IAM à conta de serviço do Cloud Run (ver docs/deploy-cloud-run.md)"
 Write-Host "  2. Atualizar API_BASE_URL no safe_qr_app/assets/.env"
 Write-Host "  3. Subir safe_qr_workers: cd ..\safe_qr_workers; .\scripts\deploy-cloud-run.ps1"
+Write-Host "  4. ADMIN_API_KEY no Cloud Run (painel web): ver docs/deploy-cloud-run.md"
+Write-Host "  5. Deploy painel: cd ..\safe_qr_web; .\scripts\deploy-firebase-hosting.ps1"

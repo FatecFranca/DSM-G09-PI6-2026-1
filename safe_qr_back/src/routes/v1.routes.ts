@@ -1,17 +1,24 @@
 import type { FastifyInstance } from 'fastify';
 
 import type { Env } from '../config/env.js';
+import { AdminController } from '../controllers/admin.controller.js';
 import { HealthController } from '../controllers/health.controller.js';
 import { HistoryController } from '../controllers/history.controller.js';
 import { QrAnalyzeController } from '../controllers/qr-analyze.controller.js';
 import { hasFirebaseCredentials } from '../lib/firebase-admin.js';
 import type { Logger } from '../lib/logger.js';
+import { BlocklistService } from '../services/blocklist.service.js';
+import { FirestoreBlocklistRepository } from '../services/blocklist-firestore.repository.js';
+import { InMemoryBlocklistRepository } from '../services/blocklist-memory.repository.js';
 import { createAnalyzeEventPublisher } from '../services/pubsub-analyze-event-publisher.js';
 import { FirebaseUserIdentityService } from '../services/firebase-user-identity.service.js';
 import { FirestoreHistoryRepository } from '../services/history-firestore.repository.js';
 import { InMemoryHistoryRepository } from '../services/history-memory.repository.js';
 import { HistoryService } from '../services/history.service.js';
 import { QrAnalyzeService } from '../services/qr-analyze.service.js';
+import { FirestoreScanEventRepository } from '../services/scan-event-firestore.repository.js';
+import { InMemoryScanEventRepository } from '../services/scan-event-memory.repository.js';
+import { ScanEventService } from '../services/scan-event.service.js';
 import { FirestoreSuspiciousHostsPort } from '../services/suspicious-hosts-firestore.js';
 import { NullSuspiciousHostsPort } from '../services/suspicious-hosts-port.js';
 
@@ -27,6 +34,20 @@ function createHistoryRepository(env: Env) {
     return new FirestoreHistoryRepository();
   }
   return new InMemoryHistoryRepository();
+}
+
+function createScanEventRepository(env: Env) {
+  if (hasFirebaseCredentials(env)) {
+    return new FirestoreScanEventRepository({ collection: env.SCAN_EVENTS_COLLECTION });
+  }
+  return new InMemoryScanEventRepository();
+}
+
+function createBlocklistRepository(env: Env) {
+  if (hasFirebaseCredentials(env)) {
+    return new FirestoreBlocklistRepository();
+  }
+  return new InMemoryBlocklistRepository();
 }
 
 function createUserIdentity(env: Env) {
@@ -53,6 +74,13 @@ export function registerV1Routes(app: FastifyInstance, env: Env, logger: Logger)
     userIdentity,
   });
 
+  const admin = new AdminController({
+    env,
+    scanEvents: new ScanEventService(createScanEventRepository(env)),
+    blocklist: new BlocklistService(createBlocklistRepository(env)),
+    apiVersion: '0.1.0',
+  });
+
   app.get('/v1/health', health.getV1);
   app.get('/health', health.getV1);
   app.post('/v1/qr/analyze', qrAnalyze.postAnalyze);
@@ -61,4 +89,10 @@ export function registerV1Routes(app: FastifyInstance, env: Env, logger: Logger)
   app.get('/v1/history', history.getHistory);
   app.delete('/v1/history/:id', history.deleteHistoryById);
   app.delete('/v1/history', history.clearHistory);
+
+  app.get('/v1/admin/stats', admin.getStats);
+  app.get('/v1/scan-events', admin.getScanEvents);
+  app.get('/v1/admin/blocklist', admin.getBlocklist);
+  app.post('/v1/admin/blocklist', admin.postBlocklist);
+  app.delete('/v1/admin/blocklist', admin.deleteBlocklist);
 }
