@@ -289,6 +289,32 @@ curl -s -X DELETE http://localhost:3000/v1/history \
 
 ---
 
+## Rotas admin (`X-Admin-Key`)
+
+Protegidas por `ADMIN_API_KEY` no servidor. Header obrigatório:
+
+```
+X-Admin-Key: <mesma chave do Cloud Run>
+```
+
+| Método | Path | Query / body |
+|--------|------|----------------|
+| `GET` | `/v1/admin/stats` | — |
+| `GET` | `/v1/scan-events` | `limit`, `offset`, `verdict?` |
+| `GET` | `/v1/admin/blocklist` | `limit`, `offset` |
+| `POST` | `/v1/admin/blocklist` | `{ "entry": "amaz0n" }` |
+| `DELETE` | `/v1/admin/blocklist` | `{ "entry": "amaz0n" }` |
+
+**Paginação:** `limit` padrão `50`, máx. `500`; `offset` padrão `0`.
+
+**Blocklist:** `entry` aceita palavra-chave (`amaz0n`, `magasine`), hostname ou URL — ver [07-integracao-firestore.md](./07-integracao-firestore.md).
+
+**Safe Browsing:** ativado via `SAFE_BROWSING_ENABLED` + `GOOGLE_SAFE_BROWSING_API_KEY` — ver [06-motor-analise.md § demo](./06-motor-analise.md#google-safe-browsing--demo-e-configuração).
+
+Painel web: https://safe-qr-app.web.app — ver [`safe_qr_web/docs/deploy-firebase-hosting.md`](../../safe_qr_web/docs/deploy-firebase-hosting.md).
+
+---
+
 ## Autenticação (`/v1/qr/analyze` + `/v1/history`)
 
 Mesmo contrato nos dois fluxos — `FirebaseUserIdentityService` + `verifyIdToken`.
@@ -345,4 +371,4 @@ Detalhes histórico: [12-api-historico.md](./12-api-historico.md) · Pub/Sub: [1
 |-------|-------|
 | `origin` | `true` |
 | `methods` | `GET`, `POST`, `DELETE`, `OPTIONS` |
-| `allowedHeaders` | `Content-Type`, `x-request-id`, `Authorization` |
+| `allowedHeaders` | `Content-Type`, `x-request-id`, `Authorization`, `X-Admin-Key`, `x-admin-key` |

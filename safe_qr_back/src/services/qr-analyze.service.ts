@@ -3,6 +3,11 @@ import { randomUUID } from 'node:crypto';
 import { QrVerdict, type QrVerdictName } from '../models/qr-verdict.js';
 import type { QrAnalyzeResultModel, QrParsedSummary } from '../models/analyze-result.model.js';
 import { normalizeHostname } from './suspicious-hosts-match.js';
+import {
+  NullSafeBrowsingPort,
+  safeBrowsingThreatLabel,
+  type SafeBrowsingPort,
+} from './safe-browsing-port.js';
 import { NullSuspiciousHostsPort, type SuspiciousHostsPort } from './suspicious-hosts-port.js';
 
 const URL_SHORTENER_HOSTS = new Set<string>([
@@ -20,10 +25,14 @@ const URL_SHORTENER_HOSTS = new Set<string>([
 /**
  * Heurística S1 — espelha o motor local do app Flutter (`QrLocalHeuristicEngine`)
  * para resposta estável entre modos local/remoto.
- * Opcionalmente cruza hostname com lista Firestore `suspicious_hosts/clones`.
+ * Opcionalmente cruza hostname com lista Firestore `suspicious_hosts/clones`
+ * e Google Safe Browsing (reputação global).
  */
 export class QrAnalyzeService {
-  constructor(private readonly suspiciousHosts: SuspiciousHostsPort = new NullSuspiciousHostsPort()) {}
+  constructor(
+    private readonly suspiciousHosts: SuspiciousHostsPort = new NullSuspiciousHostsPort(),
+    private readonly safeBrowsing: SafeBrowsingPort = new NullSafeBrowsingPort(),
+  ) {}
 
   async evaluateAsync(raw: string): Promise<QrAnalyzeResultModel> {
     const content = raw.trim();
@@ -73,9 +82,11 @@ export class QrAnalyzeService {
           });
         }
         const norm = normalizeHostname(uri.hostname);
+        const hostRaw = uri.hostname;
+        const s = uri.protocol.replace(/:$/, '');
+        const parsedUrl: QrParsedSummary = { type: 'url', scheme: s, host: hostRaw };
+
         if (await this.suspiciousHosts.isListedHostname(norm)) {
-          const hostRaw = uri.hostname;
-          const s = uri.protocol.replace(/:$/, '');
           return this.result({
             verdict: QrVerdict.unsafe,
             safe: false,
@@ -83,9 +94,24 @@ export class QrAnalyzeService {
               'Domínio consta na lista de alertas (possível clone / phishing).',
               'Lista gerida no Firestore (`suspicious_hosts/clones`, campo `urls`).',
             ],
-            parsed: { type: 'url', scheme: s, host: hostRaw },
+            parsed: parsedUrl,
           });
         }
+
+        const browsing = await this.safeBrowsing.checkUrl(content);
+        if (browsing) {
+          const label = safeBrowsingThreatLabel(browsing.threatType);
+          return this.result({
+            verdict: QrVerdict.unsafe,
+            safe: false,
+            reasons: [
+              `URL consta na Google Safe Browsing (${label}).`,
+              'Base global de sites maliciosos e phishing.',
+            ],
+            parsed: parsedUrl,
+          });
+        }
+
         return this.httpLike(uri);
       }
       if (['javascript', 'data', 'vbscript', 'file', 'jscript'].includes(scheme)) {

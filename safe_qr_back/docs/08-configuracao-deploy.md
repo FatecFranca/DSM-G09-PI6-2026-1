@@ -37,6 +37,9 @@ Todas validadas em `src/config/env.ts` com Zod na inicialização. Valores invá
 | `GOOGLE_APPLICATION_CREDENTIALS` | string? | — | Caminho para JSON da conta de serviço |
 | `FIREBASE_SERVICE_ACCOUNT_JSON` | string? | — | JSON inline da conta de serviço |
 | `FIRESTORE_SUSPICIOUS_CACHE_MS` | number | `60000` | TTL cache blocklist (max 3600000) |
+| `SAFE_BROWSING_ENABLED` | boolean | `false` | Ativa Google Safe Browsing |
+| `GOOGLE_SAFE_BROWSING_API_KEY` | string? | — | API Key GCP (Safe Browsing API) |
+| `SAFE_BROWSING_CACHE_MS` | number | `300000` | TTL cache por URL (max 3600000) |
 
 ### Exemplo `.env` completo
 
@@ -50,6 +53,11 @@ MAX_RAW_CONTENT_BYTES=8192
 GOOGLE_APPLICATION_CREDENTIALS=./safe-qr-app-dbc39536954e.json
 # FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...}
 # FIRESTORE_SUSPICIOUS_CACHE_MS=60000
+
+# Google Safe Browsing (ver 06-motor-analise.md § demo)
+# SAFE_BROWSING_ENABLED=true
+# GOOGLE_SAFE_BROWSING_API_KEY=AIza...
+# SAFE_BROWSING_CACHE_MS=300000
 ```
 
 ## Build para produção
@@ -145,6 +153,7 @@ services:
 |----------|----------------|---------|
 | `Invalid environment` no boot | Env mal formatado | Verificar tipos (PORT numérico) |
 | Firestore não lista hosts | Credenciais ausentes | Configurar `GOOGLE_APPLICATION_CREDENTIALS` |
+| Safe Browsing não marca URLs de teste | Env desativada ou API antiga em produção | Ver [06-motor-analise.md § demo](./06-motor-analise.md#google-safe-browsing--demo-e-configuração) |
 | App não alcança API | Rede/firewall | IP correto, mesma Wi‑Fi, porta aberta |
 | `413` inesperado | QR muito grande | Aumentar `MAX_RAW_CONTENT_BYTES` |
 | Logs verbosos | `LOG_LEVEL=debug` | Usar `info` em produção |

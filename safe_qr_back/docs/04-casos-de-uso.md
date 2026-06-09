@@ -173,4 +173,7 @@ Os testes em `test/` cobrem os cenários abaixo:
 | Host fora da lista | `qr-analyze-clones.test.ts` | `safe` |
 | Normalização www | `suspicious-hosts-match.test.ts` | `example.com` |
 | Subdomínio na blocklist | `suspicious-hosts-match.test.ts` | match |
+| Palavra-chave `amaz0n` | `suspicious-hosts-match.test.ts` | `amaz0n.com.br2` → unsafe |
+| Domínio com sufixo | `suspicious-hosts-match.test.ts` | `amaz0n.com.br` bloqueia `.com.br2` |
+| URL na Safe Browsing | `qr-analyze-safe-browsing.test.ts` | `testsafebrowsing.appspot.com` → unsafe |
 | Health v1 e alias | `health.test.ts` | `200 ok` |

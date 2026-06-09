@@ -111,9 +111,10 @@ flowchart TB
 ### Web (`safe_qr_web`)
 
 - Dashboard com estatísticas de vereditos
-- Lista de eventos de auditoria (`GET /v1/scan-events`)
-- Gestão da blocklist (`/v1/admin/blocklist`)
+- Eventos de auditoria com filtros e paginação (`GET /v1/scan-events`)
+- Blocklist por palavra-chave ou domínio, com paginação (`/v1/admin/blocklist`)
 - Auth via `X-Admin-Key` (`ADMIN_API_KEY` no back)
+- Produção: https://safe-qr-app.web.app
 
 ---
 
@@ -305,7 +306,8 @@ cd safe_qr_web && npm test
 | Blocklist Firestore (clones) | ✅ |
 | Auditoria `scan_events` | ✅ |
 | Publicação em lojas | ❌ fora do escopo |
-| Motor ML / Safe Browsing | ❌ roadmap |
+| Google Safe Browsing (API v4) | ✅ |
+| Motor ML / classificador | ❌ roadmap |
 
 Roadmaps detalhados:
 

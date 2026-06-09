@@ -16,7 +16,11 @@ Backend **Node.js (TypeScript)** do projeto Safe QR, alinhado ao **Sprint 1** em
 
 ### Lista de clones (Firestore)
 
-Com **`GOOGLE_APPLICATION_CREDENTIALS`** (ficheiro JSON da conta de serviço) ou **`FIREBASE_SERVICE_ACCOUNT_JSON`** (JSON inline), a API lê o documento **`suspicious_hosts/clones`**, campo **`urls`** (array de URLs ou hosts). Se o hostname do QR coincidir com uma entrada (ou for subdomínio dela), o veredito passa a **`unsafe`**. Sem credenciais, esse passo é omitido (heurística S1 apenas). Ver `.env.example` e `FIRESTORE_SUSPICIOUS_CACHE_MS`.
+Com **`GOOGLE_APPLICATION_CREDENTIALS`** (ficheiro JSON da conta de serviço) ou **`FIREBASE_SERVICE_ACCOUNT_JSON`** (JSON inline), a API lê o documento **`suspicious_hosts/clones`**, campo **`urls`** (palavras-chave, hosts ou URLs). Se o hostname do QR bater com uma entrada (subdomínio, sufixo ou palavra-chave no host), o veredito passa a **`unsafe`**. Sem credenciais, esse passo é omitido (heurística S1 apenas). Ver [docs/07-integracao-firestore.md](./docs/07-integracao-firestore.md) e `FIRESTORE_SUSPICIOUS_CACHE_MS`.
+
+### Google Safe Browsing (reputação global)
+
+Com **`SAFE_BROWSING_ENABLED=true`** e **`GOOGLE_SAFE_BROWSING_API_KEY`**, URLs http/https são consultadas na API v4 do Google. Match → **`unsafe`**. Falha da API → fail-open (heurística segue). URLs de teste e roteiro de demo: [docs/06-motor-analise.md § Safe Browsing](./docs/06-motor-analise.md#google-safe-browsing--demo-e-configuração).
 
 ## Requisitos
 

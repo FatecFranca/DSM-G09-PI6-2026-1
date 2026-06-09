@@ -19,6 +19,8 @@ import { QrAnalyzeService } from '../services/qr-analyze.service.js';
 import { FirestoreScanEventRepository } from '../services/scan-event-firestore.repository.js';
 import { InMemoryScanEventRepository } from '../services/scan-event-memory.repository.js';
 import { ScanEventService } from '../services/scan-event.service.js';
+import { GoogleSafeBrowsingPort } from '../services/google-safe-browsing.js';
+import { NullSafeBrowsingPort } from '../services/safe-browsing-port.js';
 import { FirestoreSuspiciousHostsPort } from '../services/suspicious-hosts-firestore.js';
 import { NullSuspiciousHostsPort } from '../services/suspicious-hosts-port.js';
 
@@ -27,6 +29,18 @@ function createSuspiciousHostsPort(env: Env) {
     return new NullSuspiciousHostsPort();
   }
   return new FirestoreSuspiciousHostsPort({ cacheTtlMs: env.FIRESTORE_SUSPICIOUS_CACHE_MS });
+}
+
+function createSafeBrowsingPort(env: Env) {
+  if (!env.SAFE_BROWSING_ENABLED || !env.GOOGLE_SAFE_BROWSING_API_KEY) {
+    return new NullSafeBrowsingPort();
+  }
+  return new GoogleSafeBrowsingPort({
+    apiKey: env.GOOGLE_SAFE_BROWSING_API_KEY,
+    clientId: 'safe-qr-api',
+    clientVersion: '0.1.0',
+    cacheTtlMs: env.SAFE_BROWSING_CACHE_MS,
+  });
 }
 
 function createHistoryRepository(env: Env) {
@@ -60,7 +74,10 @@ function createUserIdentity(env: Env) {
 export function registerV1Routes(app: FastifyInstance, env: Env, logger: Logger): void {
   const health = new HealthController();
   const userIdentity = createUserIdentity(env);
-  const analyzeService = new QrAnalyzeService(createSuspiciousHostsPort(env));
+  const analyzeService = new QrAnalyzeService(
+    createSuspiciousHostsPort(env),
+    createSafeBrowsingPort(env),
+  );
   const eventPublisher = createAnalyzeEventPublisher(env, logger);
   const qrAnalyze = new QrAnalyzeController({
     env,

@@ -21,11 +21,12 @@ Documentação técnica completa da API REST do projeto **Safe QR**. Este backen
 | 11 | [Roadmap e evolução](./11-roadmap-evolucao.md) | Próximas sprints, gaps, Pub/Sub |
 | 12 | [API de Histórico](./12-api-historico.md) | CRUD `/v1/history`, auth, Firestore |
 | 13 | [Pub/Sub qr.analyzed](./13-pubsub-qr-analyzed.md) | Evento + histórico assíncrono |
+| — | [Motor § Safe Browsing](./06-motor-analise.md#google-safe-browsing--demo-e-configuração) | API v4, URLs de teste, demo PI |
 
 ## Resumo em 30 segundos
 
 - **O quê:** API Node.js (TypeScript) que recebe o texto bruto de um QR Code e responde com `verdict`, `safeToOpen`, `reasons` e `parsed`.
-- **Como:** Fastify + Zod + heurística local (espelhando o motor do app) + lista opcional de domínios suspeitos no **Firestore**.
+- **Como:** Fastify + Zod + heurística local + blocklist Firestore + **Google Safe Browsing** (opcional).
 - **Endpoints atuais:** `GET /v1/health`, `POST /v1/qr/analyze` (**Bearer obrigatório**), CRUD `/v1/history` (**Bearer obrigatório**).
 - **Auth:** Firebase ID Token (`getIdToken()`) em analyze e history — `client.idUser` no body não autentica.
 - **Mensageria:** Pub/Sub `qr.analyzed` → `safe_qr_workers` (Cloud Run: `safe-qr-worker-history` + `safe-qr-worker-audit`). Ver doc 13.

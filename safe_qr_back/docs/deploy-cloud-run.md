@@ -198,6 +198,19 @@ gcloud run services update safe-qr-api `
 
 Deploy do painel: [`../../safe_qr_web/docs/deploy-firebase-hosting.md`](../../safe_qr_web/docs/deploy-firebase-hosting.md)
 
+> O script `deploy-cloud-run.ps1` usa `--set-env-vars` e **não inclui** `ADMIN_API_KEY` nem Safe Browsing. Após cada redeploy da API, reaplique variáveis sensíveis:
+
+```powershell
+gcloud run services update safe-qr-api `
+  --region southamerica-east1 `
+  --project safe-qr-app `
+  --update-env-vars "ADMIN_API_KEY=SUA_CHAVE,SAFE_BROWSING_ENABLED=true,GOOGLE_SAFE_BROWSING_API_KEY=SUA_API_KEY_GOOGLE"
+```
+
+Chave Safe Browsing: [Google Cloud Console → APIs → Safe Browsing API](https://console.cloud.google.com/apis/library/safebrowsing.googleapis.com).
+
+Guia completo (ativação GCP, URLs de teste, roteiro PI): [06-motor-analise.md § Safe Browsing](./06-motor-analise.md#google-safe-browsing--demo-e-configuração).
+
 ---
 
 ## Redeploy após mudanças no código
@@ -209,3 +222,5 @@ npm run build
 ```
 
 A URL permanece a mesma; o Cloud Run cria uma nova revisão (ex. `safe-qr-api-00002-...`).
+
+Mudanças só no painel (`safe_qr_web`): `cd ..\safe_qr_web; .\scripts\deploy-firebase-hosting.ps1` — não exige redeploy da API.

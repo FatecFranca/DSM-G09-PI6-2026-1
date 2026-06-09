@@ -9,6 +9,7 @@ Documento de planejamento baseado no estado atual do código e nos docs de sprin
 | Health check | ✅ Completo |
 | Análise heurística QR | ✅ Completo (S1) |
 | Lista Firestore clones | ✅ Completo |
+| Google Safe Browsing | ✅ Completo (API v4, fail-open) |
 | Logs com privacidade | ✅ Completo |
 | Testes automatizados | ✅ 31+ testes |
 | CRUD histórico `/v1/history` | ✅ Firestore |
@@ -95,10 +96,10 @@ flowchart LR
 
 | Feature | Descrição | Prioridade |
 |---------|-----------|------------|
-| Typosquatting | Detecção de homoglyphs | Should |
-| Resolução redirects | HEAD request controlado em encurtadores | Could |
+| Typosquatting avançado | Homoglyphs automáticos (blocklist por palavra-chave já cobre typos comuns) | Should |
+| Resolução redirects | HEAD request controlado em encurtadores (Safe Browsing já cobre reputação global) | Could |
 | Auth API | API key ou Firebase Auth | Should |
-| Admin panel | CRUD blocklist via API protegida | Could |
+| Admin panel | Painel `safe_qr_web` — eventos, blocklist, paginação | ✅ Feito |
 | Métricas | Prometheus / Cloud Monitoring | Could |
 | Cache Redis | Blocklist distribuída | Could |
 | OpenAPI | Swagger / Scalar em `/docs` | Should |

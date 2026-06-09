@@ -9,20 +9,25 @@ O backend pode consultar uma **lista dinâmica de domínios suspeitos** armazena
 | **Coleção** | `suspicious_hosts` |
 | **Documento** | `clones` |
 | **Campo** | `urls` — array de strings |
-| **Formato das entradas** | URL completa ou hostname |
+| **Formato das entradas** | URL, hostname **ou palavra-chave** (recomendado para typosquat) |
 
 ### Exemplo no Firestore Console
+
+Prefira **palavras-chave** com troca de letras (`0` por `o`, `1` por `i`, etc.) — cobrem variantes sem cadastrar cada domínio:
 
 ```json
 // Documento: suspicious_hosts/clones
 {
   "urls": [
-    "https://magasineluiza.com.br/login",
-    "amaz0n.com.br",
-    "https://www.paypa1.com"
+    "magasine",
+    "amaz0n",
+    "nub4nk",
+    "paypa1"
   ]
 }
 ```
+
+Também aceita URL ou host completo (`https://magasineluiza.com.br/login`, `amaz0n.com.br`).
 
 ## Arquitetura da integração
 
@@ -67,19 +72,23 @@ Funções em `suspicious-hosts-match.ts`:
 WWW.Example.COM → example.com
 ```
 
-### `listEntryToNormalizedHost(entry)`
+### `listEntryToBlockPattern(entry)`
 
-Aceita URL completa ou host puro:
+Converte cada entrada do array `urls` em padrão de comparação:
 
 ```
-https://amaz0n.com.br/x  → amaz0n.com.br
-evil.com                 → evil.com
+https://amaz0n.com.br/x  → amaz0n.com.br   (URL/host)
+amaz0n                   → amaz0n           (palavra-chave)
 ```
 
 ### `hostnameMatchesBlocklist(host, set)`
 
-- Match **exato** no Set
-- Match por **subdomínio**: `pay.bad.com` corresponde a `bad.com`
+| Tipo de entrada | Regra | Exemplo |
+|-----------------|-------|---------|
+| **Domínio** | Exato, subdomínio ou sufixo colado | `amaz0n.com.br` bloqueia `amaz0n.com.br2` |
+| **Palavra-chave** (sem `.`, ≥ 3 chars) | Presença no host | `amaz0n` bloqueia `amaz0n.com.br`, `pay.fake-amaz0n.com` |
+
+> Evite palavras genéricas curtas (`loja`, `pix`) — podem gerar falso positivo.
 
 ## Cache em memória
 

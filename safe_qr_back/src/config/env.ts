@@ -24,6 +24,13 @@ const envSchema = z.object({
   ADMIN_API_KEY: z.string().min(8).optional(),
   /** Coleção Firestore de auditoria (gravada pelos workers). */
   SCAN_EVENTS_COLLECTION: z.string().min(1).default('scan_events'),
+  /** Google Safe Browsing API v4 (`threatMatches:find`). */
+  SAFE_BROWSING_ENABLED: z
+    .enum(['true', 'false', '1', '0'])
+    .default('false')
+    .transform((v) => v === 'true' || v === '1'),
+  GOOGLE_SAFE_BROWSING_API_KEY: z.string().min(10).optional(),
+  SAFE_BROWSING_CACHE_MS: z.coerce.number().int().positive().max(3_600_000).default(300_000),
 });
 
 export type Env = z.infer<typeof envSchema>;

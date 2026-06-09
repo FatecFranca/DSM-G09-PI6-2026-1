@@ -32,6 +32,9 @@ export function deriveReasonCodes(model: QrAnalyzeResultModel): string[] {
   if (reasonsText.includes('lista de alertas') || reasonsText.includes('firestore')) {
     codes.add('BLOCKLIST_MATCH');
   }
+  if (reasonsText.includes('safe browsing')) {
+    codes.add('SAFE_BROWSING_MATCH');
+  }
   if (UNSAFE_SCHEMES.has(type)) {
     codes.add('UNSAFE_SCHEME');
   }

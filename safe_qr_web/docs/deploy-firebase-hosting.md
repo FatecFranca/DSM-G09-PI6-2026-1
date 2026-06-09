@@ -87,7 +87,8 @@ npx firebase deploy --only hosting --project safe-qr-app
 - [ ] Login com `ADMIN_API_KEY` do Cloud Run
 - [ ] Dashboard carrega estatísticas (`GET /v1/admin/stats`)
 - [ ] Aba Eventos lista `scan_events` (após scans no app)
-- [ ] Blocklist: adicionar/remover entrada de teste
+- [ ] Blocklist: adicionar/remover palavra-chave de teste (`amaz0n`)
+- [ ] Paginação: lista com 10+ itens mostra **Anterior / Próxima** e `1–10 de N`
 
 ---
 
@@ -100,6 +101,7 @@ npx firebase deploy --only hosting --project safe-qr-app
 | `503` admin não configurado | API sem `ADMIN_API_KEY` | Definir env no Cloud Run |
 | Página em branco em `/events` | Rewrite SPA ausente | Verificar `firebase.json` rewrites |
 | API URL errada no painel | Build sem `.env.production` | Conferir `VITE_API_BASE_URL` antes do build |
+| UI antiga após deploy | Cache do navegador no JS antigo | **Ctrl+Shift+R** ou aba anônima; conferir label **"Palavra-chave ou host"** |
 
 ---
 

@@ -2,7 +2,7 @@
 
 Painel administrativo web do projeto **Safe QR** — React + Vite + TypeScript.
 
-Monitora eventos de auditoria (`scan_events`) e gerencia a blocklist de domínios suspeitos.
+Monitora eventos de auditoria (`scan_events`) e gerencia a blocklist de palavras-chave / domínios suspeitos.
 
 ## Stack
 
@@ -52,16 +52,16 @@ Abra http://localhost:5173 e informe:
 |------|--------|
 | `/login` | Autenticação com API key |
 | `/` | Dashboard — totais e distribuição por veredito |
-| `/events` | Lista de `scan_events` com filtros |
-| `/blocklist` | CRUD da blocklist Firestore |
+| `/events` | Lista de `scan_events` com filtros por veredito e paginação (10/página) |
+| `/blocklist` | CRUD da blocklist Firestore com paginação (10/página) |
 
 ## Endpoints consumidos
 
 | Método | Path | Auth |
 |--------|------|------|
 | `GET` | `/v1/admin/stats` | `X-Admin-Key` |
-| `GET` | `/v1/scan-events` | `X-Admin-Key` |
-| `GET` | `/v1/admin/blocklist` | `X-Admin-Key` |
+| `GET` | `/v1/scan-events?limit=&offset=&verdict=` | `X-Admin-Key` |
+| `GET` | `/v1/admin/blocklist?limit=&offset=` | `X-Admin-Key` |
 | `POST` | `/v1/admin/blocklist` | `X-Admin-Key` |
 | `DELETE` | `/v1/admin/blocklist` | `X-Admin-Key` |
 

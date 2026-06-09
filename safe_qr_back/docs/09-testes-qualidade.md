@@ -85,6 +85,7 @@ Em `NODE_ENV=test`, o prefixo `Bearer test:<uid>` simula auth sem Firebase real 
 | History CRUD + JWT auth | ✅ | `history.test.ts` (15 casos) |
 | Normalização host | ✅ | `suspicious-hosts-match.test.ts` |
 | Subdomínio blocklist | ✅ | `suspicious-hosts-match.test.ts` |
+| Google Safe Browsing (mock) | ✅ | `google-safe-browsing.test.ts`, `qr-analyze-safe-browsing.test.ts` |
 | Firestore real | ❌ | Requer credenciais |
 | Error handler 500 | ❌ | Não testado |
 | CORS headers | ❌ | Não testado |
